@@ -18,7 +18,7 @@ Reply with ONLY JSON in this exact shape:
 {"headline":"one sentence with the change in naira and percent",
  "explain":"NORMAL: max 70 words. DEEPER: max 150 words",
  "causes":["NORMAL: 3 short likely causes. DEEPER: 4"],
- "compare":"one sentence comparing the item's yearly rate with the national food rate (for food) or headline rate (for other things)",
+ "compare":"one sentence comparing the item's yearly rate with the national food rate (for food) or headline rate (for other things). If state figures are given (not null), also mention the user's state rate in the same sentence",
  "tips":["NORMAL: 2 practical ways a family can cope. DEEPER: 4"],
  "answer":""}`;
 
@@ -69,7 +69,11 @@ module.exports = async function handler(req, res) {
       headline_inflation_percent: num(b.facts && b.facts.headline),
       food_inflation_percent: num(b.facts && b.facts.food),
       period: privacyFilter(b.facts && b.facts.label),
-      source: privacyFilter(b.facts && b.facts.source)
+      source: privacyFilter(b.facts && b.facts.source),
+      // State figures come from our STATE_NOTICES list. null means "awaiting NBS update": do not guess it.
+      state: b.facts && b.facts.state ? privacyFilter(b.facts.state) : "",
+      state_food_inflation_percent: num(b.facts && b.facts.stateFood),
+      state_headline_inflation_percent: num(b.facts && b.facts.stateHeadline)
     }
   };
   if (data.oldPrice == null || data.newPrice == null) return res.status(400).json({ error: "Prices missing" });

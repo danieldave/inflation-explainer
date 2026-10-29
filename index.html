@@ -5,128 +5,195 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Inflation Explainer AI</title>
 <meta name="claude:viewport-fit-sides" content="cover">
-<meta name="description" content="Type an item and two prices. Our code works out the exact change and the AI explains it in simple English.">
+<meta name="description" content="Type an item and two prices. Our code works out the exact change, the AI explains it in simple English, and the Price Watch board shows what is changing in every Nigerian state.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Nunito+Sans:opsz,wght@6..12,400;6..12,700;6..12,800&family=IBM+Plex+Mono:wght@500;600&display=swap">
 <style>
 html{color-scheme:light}:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}
 
-/* Layout: a market-day "price slip" — green band header, input card, then a numbered result slip with a shrinking ₦1,000 note */
+/* Layout: market-day price slip. Dark green sticky bar + Ankara-pattern hero, Price Watch board, input card, numbered 8-part answer slip. */
 :root{
-  --bg:#F5F7EE; --surface:#FFFFFF; --ink:#2B1D12; --muted:#6B5A49; --line:#E2DCCA;
-  --green:#1E6B3A; --green-deep:#123F23; --gold:#E3A10E; --gold-soft:#FCF0C9; --brown:#7A4A22; --brown-soft:#F3E6D8;
-  --band-ink:#FFF8E6; --up:#B4421F; --down:#1E6B3A;
-  --display:"Bricolage Grotesque", "Trebuchet MS", system-ui, sans-serif;
-  --body:"Nunito Sans", "Segoe UI", system-ui, sans-serif;
-  --mono:"IBM Plex Mono", ui-monospace, Consolas, monospace;
-  --r:14px;
+  --bg:#F4F5EA; --surface:#FFFFFF; --surface-2:#FBF7EA; --ink:#2A1C10; --muted:#6A5846; --line:#E4DCC6;
+  --green:#1E7A40; --green-deep:#0F3D22; --gold:#E9A80F; --gold-soft:#FDF1CC; --brown:#7A4A22; --brown-soft:#F3E5D4;
+  --rise:#D9561F; --rise-soft:#FCE3D6; --mid:#B97F06; --mid-soft:#FBEFC9; --fall:#1E8E4E; --fall-soft:#DDF4E5;
+  --hdr:#0F3D22; --hdr-ink:#FFF8E6; --on-gold:#2A1C10;
+  --display:"Bricolage Grotesque","Trebuchet MS",system-ui,sans-serif;
+  --body:"Nunito Sans","Segoe UI",system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Consolas,monospace;
+  --r:16px;
 }
 @media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
-  --bg:#12170F; --surface:#1B2216; --ink:#F3ECDD; --muted:#B8AA94; --line:#334028;
-  --green:#5DBE7E; --green-deep:#0D2B17; --gold:#F2BE3A; --gold-soft:#3A3115; --brown:#D39A63; --brown-soft:#33261A;
-  --band-ink:#FFF8E6; --up:#F08A63; --down:#5DBE7E; color-scheme:dark }}
+  --bg:#0E140D; --surface:#172014; --surface-2:#1C2718; --ink:#F4EDDC; --muted:#B9AB93; --line:#2F3D27;
+  --green:#5CCB85; --green-deep:#0A2414; --gold:#F5C443; --gold-soft:#3A3014; --brown:#D9A06A; --brown-soft:#33251A;
+  --rise:#FF8A57; --rise-soft:#3E2114; --mid:#F5C443; --mid-soft:#3A3014; --fall:#5CCB85; --fall-soft:#15301F;
+  --hdr:#0A2414; --hdr-ink:#FFF8E6; --on-gold:#2A1C10; color-scheme:dark }}
 :root[data-theme="dark"]{
-  --bg:#12170F; --surface:#1B2216; --ink:#F3ECDD; --muted:#B8AA94; --line:#334028;
-  --green:#5DBE7E; --green-deep:#0D2B17; --gold:#F2BE3A; --gold-soft:#3A3115; --brown:#D39A63; --brown-soft:#33261A;
-  --band-ink:#FFF8E6; --up:#F08A63; --down:#5DBE7E; color-scheme:dark }
+  --bg:#0E140D; --surface:#172014; --surface-2:#1C2718; --ink:#F4EDDC; --muted:#B9AB93; --line:#2F3D27;
+  --green:#5CCB85; --green-deep:#0A2414; --gold:#F5C443; --gold-soft:#3A3014; --brown:#D9A06A; --brown-soft:#33251A;
+  --rise:#FF8A57; --rise-soft:#3E2114; --mid:#F5C443; --mid-soft:#3A3014; --fall:#5CCB85; --fall-soft:#15301F;
+  --hdr:#0A2414; --hdr-ink:#FFF8E6; --on-gold:#2A1C10; color-scheme:dark }
 
 *{box-sizing:border-box}
-body{background:var(--bg);color:var(--ink);font:16px/1.6 var(--body);}
-.wrap{max-width:1040px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+html{scroll-behavior:smooth;scroll-padding-top:80px}
+body{background:var(--bg);color:var(--ink);font:16px/1.6 var(--body);transition:background .3s,color .3s}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:30;background:var(--hdr)}
+.wrap{max-width:1100px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
 h1,h2,h3{font-family:var(--display);line-height:1.15;text-wrap:balance;margin:0}
 a{color:var(--green)}
 :focus-visible{outline:3px solid var(--gold);outline-offset:2px;border-radius:6px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
 
-/* Header band */
-.band{background:var(--green-deep);color:var(--band-ink);border-bottom:6px solid var(--gold)}
-.band .wrap{padding-block:18px 34px}
-.top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
-.brand{display:flex;align-items:center;gap:12px;font-family:var(--display);font-weight:800;font-size:1.05rem;letter-spacing:.01em}
-.logo{width:46px;height:46px;border-radius:12px;background:var(--gold);color:#2B1D12;display:grid;place-items:center;font:800 1.5rem var(--display);box-shadow:inset 0 -4px 0 rgba(0,0,0,.18)}
-.nav{display:flex;gap:8px;flex-wrap:wrap}
-.nav a{color:var(--band-ink);text-decoration:none;font-weight:700;font-size:.9rem;padding:6px 12px;border:1px solid rgba(255,248,230,.35);border-radius:999px}
+/* ===== Sticky top bar ===== */
+.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--hdr);color:var(--hdr-ink);border-bottom:4px solid var(--gold)}
+.bar .wrap{display:flex;align-items:center;gap:10px;min-height:62px;padding-block:8px}
+.brand{display:flex;align-items:center;gap:10px;font:800 1.05rem var(--display);color:var(--hdr-ink);text-decoration:none;margin-right:auto}
+.logo{width:40px;height:40px;border-radius:11px;background:var(--gold);color:var(--on-gold);display:grid;place-items:center;font:800 1.35rem var(--display);box-shadow:inset 0 -4px 0 rgba(0,0,0,.18)}
+.nav{display:flex;gap:6px}
+.nav a{color:var(--hdr-ink);text-decoration:none;font-weight:700;font-size:.9rem;padding:8px 12px;border-radius:999px}
 .nav a:hover{background:rgba(255,248,230,.12)}
-.hero{display:grid;grid-template-columns:1.4fr 1fr;gap:28px;align-items:end;margin-top:26px}
-.hero h1{font-size:clamp(2.1rem,5.5vw,3.6rem);font-weight:800;letter-spacing:-.02em}
-.hero h1 em{font-style:normal;color:var(--gold)}
-.hero p{margin:12px 0 0;max-width:58ch;opacity:.92}
-.facts{background:rgba(255,248,230,.08);border:1px solid rgba(255,248,230,.22);border-radius:var(--r);padding:14px 16px;font-size:.88rem}
-.facts b{font-family:var(--mono);font-size:1.35rem;color:var(--gold);display:block;line-height:1.2}
-.facts .row{display:flex;gap:18px;margin-bottom:8px}
-.facts small{opacity:.8}
-.badge{display:inline-block;margin-top:14px;background:var(--gold);color:#2B1D12;font-weight:800;font-size:.8rem;padding:5px 12px;border-radius:999px}
+.iconbtn{width:44px;height:44px;border-radius:12px;border:1px solid rgba(255,248,230,.3);background:rgba(255,248,230,.08);color:var(--hdr-ink);display:grid;place-items:center;cursor:pointer}
+.iconbtn svg{width:22px;height:22px}
+.menuBtn{display:none}
+.sun{display:none}
+:root[data-theme="dark"] .sun{display:block} :root[data-theme="dark"] .moon{display:none}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]) .sun{display:block} :root:not([data-theme="light"]) .moon{display:none} }
 
-/* Steps guide */
-.guide{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:22px 0 0;padding:0;list-style:none;counter-reset:s}
-.guide li{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 12px;font-size:.88rem;counter-increment:s;display:flex;gap:10px;align-items:flex-start}
-.guide li::before{content:counter(s);flex:none;width:24px;height:24px;border-radius:50%;background:var(--green);color:var(--surface);font:700 .8rem var(--mono);display:grid;place-items:center}
+/* ===== Hero with CSS Ankara pattern ===== */
+.hero{background:var(--hdr);color:var(--hdr-ink);position:relative;overflow:hidden}
+.hero::before{content:"";position:absolute;inset:0;opacity:.16;pointer-events:none;
+  background:
+    radial-gradient(circle at 50% 50%, #E9A80F 0 9px, transparent 10px) 0 0/56px 56px,
+    radial-gradient(circle at 50% 50%, transparent 0 15px, #D9A06A 16px 18px, transparent 19px) 28px 28px/56px 56px,
+    conic-gradient(from 45deg at 50% 50%, #E9A80F 0 25%, transparent 0 50%, #E9A80F 0 75%, transparent 0) 0 0/28px 28px;
+  -webkit-mask-image:linear-gradient(90deg,transparent 30%,#000 75%);mask-image:linear-gradient(90deg,transparent 30%,#000 75%)}
+.hero .wrap{position:relative;padding-block:30px 36px;display:grid;grid-template-columns:1.35fr 1fr;gap:28px;align-items:end}
+.hero h1{font-size:clamp(2rem,5.4vw,3.5rem);font-weight:800;letter-spacing:-.02em}
+.hero h1 em{font-style:normal;color:#F5C443}
+.hero p{margin:12px 0 0;max-width:56ch;opacity:.92}
+.pill{display:inline-block;margin-top:14px;background:#F5C443;color:var(--on-gold);font-weight:800;font-size:.8rem;padding:6px 12px;border-radius:999px}
+.facts{background:rgba(255,248,230,.07);border:1px solid rgba(255,248,230,.22);border-radius:var(--r);padding:16px;backdrop-filter:blur(2px)}
+.facts .row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.facts b{font:600 1.7rem/1.1 var(--mono);color:#F5C443;display:block}
+.facts .lbl{font-weight:800;font-size:.85rem}
+.facts .was{font-size:.78rem;opacity:.8}
+.facts small{display:block;margin-top:10px;opacity:.8;font-size:.78rem}
+.kente{height:12px;background:repeating-linear-gradient(90deg,var(--green) 0 34px,var(--gold) 34px 46px,var(--brown) 46px 70px,var(--gold) 70px 82px)}
 
-/* Form */
-main{padding-block:0 40px}
-.card{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:22px;margin-top:22px;box-shadow:0 1px 0 var(--line)}
-.card h2{font-size:1.4rem;display:flex;align-items:center;gap:10px}
-.tag{font:700 .72rem var(--body);letter-spacing:.08em;text-transform:uppercase;color:var(--brown);background:var(--brown-soft);padding:4px 10px;border-radius:999px}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px 18px;margin-top:16px}
+/* ===== Section cards ===== */
+main{padding-block:0 30px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:22px;margin-top:22px}
+.card h2{font-size:clamp(1.3rem,3vw,1.6rem);display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.tag{font:800 .7rem var(--body);letter-spacing:.08em;text-transform:uppercase;color:var(--brown);background:var(--brown-soft);padding:4px 10px;border-radius:999px}
+.lead{color:var(--muted);margin:6px 0 0;max-width:70ch}
+
+/* ===== Price Watch ===== */
+.watch{border-top:6px solid var(--gold)}
+.updated{font-size:.82rem;color:var(--muted);margin-top:4px}
+.ticker{margin-top:16px;border-radius:12px;background:var(--hdr);color:var(--hdr-ink);overflow:hidden;position:relative;display:flex;align-items:center}
+.ticker .lab{flex:none;background:#F5C443;color:var(--on-gold);font:800 .78rem var(--body);letter-spacing:.06em;text-transform:uppercase;padding:12px 12px;z-index:1}
+.tick-view{overflow:hidden;flex:1;min-width:0}
+.tick-track{display:flex;width:max-content;animation:scroll 70s linear infinite}
+.ticker:hover .tick-track,.ticker.paused .tick-track{animation-play-state:paused}
+.tick-track span{white-space:nowrap;padding:12px 22px;font-size:.9rem;border-right:1px solid rgba(255,248,230,.18)}
+.tick-track b.r{color:#FF9B6B} .tick-track b.f{color:#7FE0A2} .tick-track b.m{color:#F5C443}
+@keyframes scroll{to{transform:translateX(-50%)}}
+.tools{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:16px}
+.tools input{flex:1 1 200px}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{min-height:40px;border:1.5px solid var(--line);background:var(--surface-2);color:var(--ink);border-radius:999px;padding:6px 14px;font:700 .86rem var(--body);cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--green);border-color:var(--green);color:var(--surface)}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:.8rem;color:var(--muted);margin-top:12px}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px;vertical-align:middle}
+.states{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px;margin-top:14px;max-height:620px;overflow:auto;padding:2px 4px 4px 2px}
+.st{border:1px solid var(--line);border-radius:14px;padding:14px;background:var(--surface-2);display:flex;flex-direction:column;gap:6px;min-width:0;position:relative;border-left:6px solid var(--line)}
+.st.r{border-left-color:var(--rise)} .st.m{border-left-color:var(--mid)} .st.f{border-left-color:var(--fall)}
+.st.mine{box-shadow:0 0 0 3px var(--gold);background:var(--gold-soft)}
+.st h3{font-size:1.05rem;display:flex;justify-content:space-between;gap:8px;align-items:center}
+.st .reg{font:700 .68rem var(--body);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.st .nums{display:flex;gap:16px;align-items:baseline;flex-wrap:wrap}
+.st .nums b{font:600 1.35rem var(--mono);font-variant-numeric:tabular-nums}
+.st.r .nums b.food{color:var(--rise)} .st.m .nums b.food{color:var(--mid)} .st.f .nums b.food{color:var(--fall)}
+.st .nums small{display:block;font-size:.72rem;color:var(--muted);font-weight:700}
+.st .hd b{font-size:1rem!important}
+.st p{margin:0;font-size:.86rem}
+.st .src{font-size:.72rem;color:var(--muted)}
+.st .wait{font:600 .9rem var(--mono);color:var(--muted)}
+.arrow{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;font-size:.9rem;font-weight:800;flex:none}
+.st.r .arrow{background:var(--rise-soft);color:var(--rise)} .st.m .arrow{background:var(--mid-soft);color:var(--mid)} .st.f .arrow{background:var(--fall-soft);color:var(--fall)}
+.st.n .arrow{background:var(--brown-soft);color:var(--muted)}
+.none{color:var(--muted);padding:20px;text-align:center;grid-column:1/-1}
+.small-note{font-size:.78rem;color:var(--muted);margin:10px 0 0}
+
+/* ===== Form ===== */
+.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:16px;list-style:none;padding:0}
+.steps li{position:relative;text-align:center;font-size:.8rem;font-weight:800;color:var(--muted);padding-top:16px}
+.steps li::before{content:"";position:absolute;top:0;left:0;right:0;height:8px;border-radius:999px;background:var(--brown-soft);transition:background .3s}
+.steps li.on{color:var(--green)} .steps li.on::before{background:linear-gradient(90deg,var(--green),var(--gold))}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px 18px;margin-top:18px}
 .field{display:flex;flex-direction:column;gap:5px;min-width:0}
 .field.full{grid-column:1/-1}
 label{font-weight:800;font-size:.9rem}
 label .opt{font-weight:400;color:var(--muted)}
 .hint{font-size:.8rem;color:var(--muted)}
-input,select,textarea{font:inherit;color:var(--ink);background:var(--bg);border:1.5px solid var(--line);border-radius:10px;padding:10px 12px;width:100%;min-width:0}
+input,select,textarea{font:inherit;color:var(--ink);background:var(--bg);border:1.5px solid var(--line);border-radius:12px;padding:10px 12px;width:100%;min-width:0;min-height:46px}
 input:focus,select:focus,textarea:focus{border-color:var(--green);outline:none;box-shadow:0 0 0 3px var(--gold-soft)}
 .naira{position:relative}
 .naira span{position:absolute;left:12px;top:50%;transform:translateY(-50%);font-weight:800;color:var(--brown)}
 .naira input{padding-left:30px;font-family:var(--mono)}
 .pair{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 textarea{min-height:76px;resize:vertical}
-.actions{display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-top:18px}
-.btn{font:800 1.05rem var(--display);background:var(--gold);color:#2B1D12;border:0;border-radius:12px;padding:13px 26px;cursor:pointer;box-shadow:inset 0 -4px 0 rgba(0,0,0,.18)}
-.btn:hover{filter:brightness(1.05)}
+.actions{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:18px}
+.btn{min-height:48px;font:800 1.05rem var(--display);background:var(--gold);color:var(--on-gold);border:0;border-radius:14px;padding:12px 26px;cursor:pointer;box-shadow:inset 0 -4px 0 rgba(0,0,0,.18);transition:transform .15s}
+.btn:hover{transform:translateY(-1px)}
 .btn:disabled{opacity:.6;cursor:wait}
-.btn.ghost{background:transparent;color:var(--ink);border:1.5px solid var(--line);box-shadow:none;font-size:.95rem;padding:11px 18px}
-.deep{display:flex;align-items:center;gap:8px;font-weight:700;cursor:pointer;background:var(--brown-soft);padding:9px 14px;border-radius:10px}
-.deep input{width:18px;height:18px;accent-color:var(--brown)}
-.err{color:var(--up);font-weight:700;margin-top:10px}
+.btn.ghost{background:transparent;color:var(--ink);border:1.5px solid var(--line);box-shadow:none;font-size:.95rem;padding:10px 16px}
+.btn.green{background:var(--green);color:var(--surface)}
+.deep{min-height:48px;display:flex;align-items:center;gap:8px;font-weight:800;cursor:pointer;background:var(--brown-soft);padding:8px 14px;border-radius:12px}
+.deep input{width:20px;height:20px;min-height:0;accent-color:var(--brown)}
+.err{color:var(--rise);font-weight:800;margin-top:10px}
 
-/* Output slip */
+/* ===== Answer slip ===== */
 .slip{border-top:6px solid var(--green)}
+.slip-head{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
 .notes{display:flex;flex-direction:column;gap:8px;margin-top:14px}
-.note{border-radius:10px;padding:10px 14px;font-size:.92rem;background:var(--gold-soft);border-left:4px solid var(--gold)}
+.note{border-radius:12px;padding:10px 14px;font-size:.92rem;background:var(--gold-soft);border-left:4px solid var(--gold)}
 .note.info{background:var(--brown-soft);border-left-color:var(--brown)}
 .sections{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:16px}
-.sec{border:1px solid var(--line);border-radius:var(--r);padding:16px;min-width:0;background:var(--bg)}
+.sec{border:1px solid var(--line);border-radius:var(--r);padding:16px;min-width:0;background:var(--surface-2)}
 .sec.wide{grid-column:1/-1}
-.sec h3{font-size:1rem;display:flex;align-items:center;gap:10px;margin-bottom:8px}
-.num{flex:none;width:26px;height:26px;border-radius:8px;background:var(--brown);color:var(--surface);font:600 .8rem var(--mono);display:grid;place-items:center}
-.big{font:600 clamp(1.6rem,4vw,2.2rem) var(--mono);font-variant-numeric:tabular-nums;line-height:1.1}
-.up{color:var(--up)} .dn{color:var(--down)}
-.sub{color:var(--muted);font-size:.88rem;margin:4px 0 0}
-.mathlist{font:500 .86rem var(--mono);margin:0;padding:0;list-style:none;display:grid;gap:4px;font-variant-numeric:tabular-nums}
-.mathlist li{display:flex;justify-content:space-between;gap:10px;border-bottom:1px dashed var(--line);padding-bottom:4px;flex-wrap:wrap}
+.sec h3{font-size:1rem;display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.num{flex:none;width:28px;height:28px;border-radius:9px;background:var(--brown);color:var(--surface);font:600 .82rem var(--mono);display:grid;place-items:center}
+.sec:nth-child(4n+1) .num{background:var(--green)} .sec:nth-child(4n+2) .num{background:var(--gold);color:var(--on-gold)} .sec:nth-child(4n+3) .num{background:var(--rise)}
+.big{font:600 clamp(1.7rem,4.4vw,2.4rem) var(--mono);font-variant-numeric:tabular-nums;line-height:1.1}
+.up{color:var(--rise)} .dn{color:var(--fall)}
+.sub{color:var(--muted);font-size:.88rem;margin:6px 0 0}
+.mathlist{font:500 .86rem var(--mono);margin:0;padding:0;list-style:none;display:grid;gap:5px;font-variant-numeric:tabular-nums}
+.mathlist li{display:flex;justify-content:space-between;gap:10px;border-bottom:1px dashed var(--line);padding-bottom:5px;flex-wrap:wrap}
 .mathlist li span:first-child{color:var(--muted)}
-.notewrap{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-top:8px}
-.notebar{flex:1 1 220px;height:46px;border-radius:8px;background:var(--brown-soft);position:relative;overflow:hidden;border:1px dashed var(--brown)}
-.notebar i{position:absolute;inset:0 auto 0 0;background:linear-gradient(90deg,var(--green),var(--green-deep));border-radius:7px;display:flex;align-items:center;padding-left:10px;color:#FFF8E6;font:600 .9rem var(--mono);transition:width .8s ease;white-space:nowrap}
+.notebar{height:54px;border-radius:10px;background:var(--brown-soft);position:relative;overflow:hidden;border:1.5px dashed var(--brown);margin-top:4px}
+.notebar i{position:absolute;inset:0 auto 0 0;width:100%;border-radius:8px;display:flex;align-items:center;padding-left:12px;color:#FFF8E6;font:600 .95rem var(--mono);white-space:nowrap;transition:width 1.2s cubic-bezier(.3,.7,.2,1);
+  background:repeating-linear-gradient(135deg,rgba(255,255,255,.08) 0 6px,transparent 6px 12px),linear-gradient(90deg,#1E7A40,#0F3D22)}
 .ai-head{font:700 1.15rem var(--display);margin:0 0 6px}
-.who{font-size:.75rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--green);margin-bottom:6px}
-.who.demo{color:var(--brown)}
+.who{display:inline-block;font-size:.72rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--green);background:var(--fall-soft);border-radius:999px;padding:3px 10px;margin-bottom:8px}
+.who.demo{color:var(--brown);background:var(--brown-soft)}
 ul.clean{margin:0;padding-left:20px;display:grid;gap:6px}
-.bars{display:grid;gap:10px;margin-top:6px}
-.bar{display:grid;grid-template-columns:150px 1fr 70px;gap:10px;align-items:center;font-size:.88rem}
-.bar .track{height:14px;background:var(--brown-soft);border-radius:999px;overflow:hidden}
-.bar .fill{height:100%;border-radius:999px;background:var(--gold)}
-.bar.item .fill{background:var(--green)}
-.bar b{font:600 .9rem var(--mono);text-align:right;font-variant-numeric:tabular-nums}
-.next{margin-top:14px;padding:14px 16px;border-radius:var(--r);background:var(--green-deep);color:#FFF8E6}
-.next b{color:var(--gold)}
+.bars{display:grid;gap:10px}
+.brow{display:grid;grid-template-columns:minmax(0,150px) 1fr 64px;gap:10px;align-items:center;font-size:.86rem}
+.brow .track{height:16px;background:var(--brown-soft);border-radius:999px;overflow:hidden}
+.brow .fill{height:100%;border-radius:999px;width:0;transition:width 1s ease}
+.brow b{font:600 .9rem var(--mono);text-align:right;font-variant-numeric:tabular-nums}
+.next{margin-top:14px;padding:16px;border-radius:var(--r);background:var(--hdr);color:var(--hdr-ink)}
+.next b{color:#F5C443}
 .empty{color:var(--muted);text-align:center;padding:26px 10px}
 .empty .bigN{font:800 3rem var(--display);color:var(--gold)}
 .loading{display:flex;align-items:center;gap:10px;color:var(--muted);margin-top:14px}
 .dot{width:10px;height:10px;border-radius:50%;background:var(--gold);animation:p 1s infinite alternate}
 @keyframes p{to{opacity:.25;transform:scale(.7)}}
+#copyBox{margin-top:10px;font:500 .8rem var(--mono);min-height:140px}
+.toast{font-weight:800;color:var(--green);font-size:.88rem}
 
-/* Info sections */
+/* ===== Info ===== */
 .two{display:grid;grid-template-columns:1fr 1fr;gap:22px}
 .how ol{margin:10px 0 0;padding-left:20px;display:grid;gap:8px}
 pre.sent{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:12px;font:500 .78rem/1.5 var(--mono);white-space:pre-wrap;word-break:break-word;max-height:300px;overflow:auto;margin:10px 0 0}
@@ -134,72 +201,127 @@ pre.sent{background:var(--bg);border:1px solid var(--line);border-radius:10px;pa
 .who-for span{background:var(--gold-soft);border:1px solid var(--line);border-radius:999px;padding:5px 12px;font-size:.85rem;font-weight:700}
 .guard{display:grid;gap:8px;margin:10px 0 0;padding:0;list-style:none}
 .guard li{padding-left:28px;position:relative}
-.guard li::before{content:"✓";position:absolute;left:0;top:0;width:20px;height:20px;border-radius:50%;background:var(--green);color:var(--surface);display:grid;place-items:center;font-size:.75rem;font-weight:800}
-footer{background:var(--brown);color:#FFF8E6;margin-top:30px;border-top:6px solid var(--gold)}
-footer .wrap{padding-block:20px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:center}
-footer strong{font-family:var(--display);font-size:1.05rem;letter-spacing:.02em}
+.guard li::before{content:"✓";position:absolute;left:0;top:2px;width:20px;height:20px;border-radius:50%;background:var(--green);color:var(--surface);display:grid;place-items:center;font-size:.75rem;font-weight:800}
+footer{background:var(--hdr);color:var(--hdr-ink);margin-top:30px}
+footer .wrap{padding-block:22px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:center}
+footer strong{font-family:var(--display);font-size:1.05rem}
 footer small{opacity:.85}
 
-@media (max-width:760px){
-  .hero,.two,.grid,.sections{grid-template-columns:1fr}
-  .guide{grid-template-columns:1fr 1fr}
-  .bar{grid-template-columns:110px 1fr 60px}
+/* ===== Phones ===== */
+@media (max-width:820px){
+  .menuBtn{display:grid}
+  .nav{display:none;position:absolute;top:100%;left:0;right:0;flex-direction:column;background:var(--hdr);padding:8px max(16px,env(safe-area-inset-right,0px)) 14px max(16px,env(safe-area-inset-left,0px));border-bottom:4px solid var(--gold)}
+  .nav.open{display:flex}
+  .nav a{padding:12px;font-size:1rem}
+  .hero .wrap,.two,.grid,.sections{grid-template-columns:1fr}
+  .card{padding:18px 14px}
 }
-@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+@media (max-width:420px){
+  .pair{grid-template-columns:1fr}
+  .brow{grid-template-columns:minmax(0,96px) 1fr 56px;font-size:.8rem}
+  .steps li{font-size:.7rem}
+  .brand span.t{font-size:.95rem}
+}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *{animation:none!important;transition:none!important}
+  .tick-view{overflow-x:auto}
+}
 </style>
 </head>
 <body>
-<header class="band">
+<script>
+/* THEME FIRST: apply the saved light/dark choice before the page draws, so it doesn't flash */
+(function(){ try { const t = localStorage.getItem("iea-theme"); if (t === "dark" || t === "light") document.documentElement.setAttribute("data-theme", t); } catch(e){} })();
+</script>
+
+<header class="bar">
   <div class="wrap">
-    <div class="top">
-      <div class="brand"><div class="logo" aria-hidden="true">₦</div>Inflation Explainer AI</div>
-      <nav class="nav" aria-label="Page sections">
-        <a href="#tool">Try it</a><a href="#how">How it works</a><a href="#about">About</a>
-      </nav>
-    </div>
-    <div class="hero">
-      <div>
-        <h1>Why did the price go up? <em>Let's work it out.</em></h1>
-        <p>Prices keep rising, and many families and young people don't know why. Type an item with its old and new price. Our code works out the exact change, then the AI explains it in simple English with tips that fit Nigeria.</p>
-        <span class="badge">Recommended for anyone feeling price changes in goods and services</span>
-      </div>
-      <div class="facts" aria-label="National inflation figures">
-        <div class="row">
-          <div><b id="fHead">14.63%</b>Headline inflation</div>
-          <div><b id="fFood">19.59%</b>Food inflation</div>
-        </div>
-        <small id="fSrc">Year-on-year, September 2026. Source: NBS CPI report, 15 Oct 2026.</small>
-      </div>
-    </div>
+    <a class="brand" href="#top"><span class="logo" aria-hidden="true">₦</span><span class="t">Inflation Explainer AI</span></a>
+    <nav class="nav" id="nav" aria-label="Page sections">
+      <a href="#tool">Try it</a><a href="#watch">Price Watch</a><a href="#how">How it works</a><a href="#about">About</a>
+    </nav>
+    <button class="iconbtn" id="theme" type="button" aria-label="Switch light or night mode">
+      <svg class="moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+      <svg class="sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+    </button>
+    <button class="iconbtn menuBtn" id="menu" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="nav">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+    </button>
   </div>
 </header>
 
-<main class="wrap" id="tool">
-  <ol class="guide" aria-label="How to use">
-    <li>Name the item and its type, e.g. Ofada rice.</li>
-    <li>Pick your state so we can check your prices.</li>
-    <li>Type the old and new price with their months.</li>
-    <li>Press Explain. Tick Deeper answer for more detail.</li>
-  </ol>
+<section class="hero" id="top">
+  <div class="wrap">
+    <div>
+      <h1>Why did the price go up? <em>Let's work it out together.</em></h1>
+      <p>Type an item with its old and new price. Our code works out the exact change, then the AI explains it in simple English with tips that fit Nigeria. Check the Price Watch board to see what is changing in your state.</p>
+      <span class="pill">For anyone feeling price changes in goods and services</span>
+    </div>
+    <div class="facts" aria-label="Nigeria inflation figures">
+      <div class="row">
+        <div><b id="fHead">14.63%</b><span class="lbl">Headline inflation</span><div class="was" id="fHeadWas"></div></div>
+        <div><b id="fFood">19.59%</b><span class="lbl">Food inflation</span><div class="was" id="fFoodWas"></div></div>
+      </div>
+      <small id="fSrc"></small>
+    </div>
+  </div>
+</section>
+<div class="kente" aria-hidden="true"></div>
 
+<main class="wrap">
+
+  <!-- ===== PRICE WATCH NOTICE BOARD ===== -->
+  <section class="card watch" id="watch">
+    <h2>Price Watch: what's changing in your state <span class="tag">Notice board</span></h2>
+    <p class="updated" id="updated"></p>
+    <div class="ticker" id="ticker" aria-label="Latest price notices">
+      <span class="lab">Notice</span>
+      <div class="tick-view"><div class="tick-track" id="track"></div></div>
+    </div>
+    <div class="tools">
+      <label class="sr" for="find">Search a state</label>
+      <input id="find" type="search" placeholder="Search a state, e.g. Ogun">
+      <div class="chips" role="group" aria-label="Filter states">
+        <button class="chip" type="button" data-f="all" aria-pressed="true">All</button>
+        <button class="chip" type="button" data-f="fast" aria-pressed="false">Rising fastest</button>
+        <button class="chip" type="button" data-f="slow" aria-pressed="false">Rising slowest</button>
+        <button class="chip" type="button" data-f="North" aria-pressed="false">North</button>
+        <button class="chip" type="button" data-f="South" aria-pressed="false">South</button>
+        <button class="chip" type="button" data-f="mine" aria-pressed="false">My state</button>
+      </div>
+    </div>
+    <div class="legend">
+      <span><i style="background:var(--rise)"></i>Food prices rising fast (20% or more a year)</span>
+      <span><i style="background:var(--mid)"></i>Rising (10–20%)</span>
+      <span><i style="background:var(--fall)"></i>Rising slowly or falling (under 10%)</span>
+    </div>
+    <div class="states" id="states"></div>
+    <p class="small-note">Figures are year-on-year: how much prices changed compared with the same month last year. "Why it changed" gives likely, general reasons written by our team. It is not an official NBS finding.</p>
+  </section>
+
+  <!-- ===== INPUT FORM ===== -->
   <form class="card" id="form" novalidate>
-    <h2>Your price check <span class="tag">Check input</span></h2>
+    <h2 id="tool">Your price check <span class="tag">Check input</span></h2>
+    <ol class="steps" id="steps" aria-label="Progress">
+      <li data-s="item">Item</li><li data-s="loc">Location</li><li data-s="price">Prices</li><li data-s="go">Explain</li>
+    </ol>
     <div class="grid">
       <div class="field">
         <label for="item">Item or service</label>
-        <input id="item" list="items" placeholder="e.g. Rice, garri, petrol, bus fare" autocomplete="off" value="Rice">
+        <input id="item" list="items" placeholder="e.g. Rice, garri, petrol, bus fare" autocomplete="off">
         <datalist id="items"><option>Rice</option><option>Garri</option><option>Beans</option><option>Onions</option><option>Ginger</option><option>Bread</option><option>Eggs</option><option>Petrol</option><option>Bus fare</option><option>School fees</option><option>Data bundle</option><option>House rent</option></datalist>
       </div>
       <div class="field">
         <label for="kind">Type / quality <span class="opt">(helps the answer)</span></label>
-        <input id="kind" placeholder="e.g. Ofada rice, parboiled rice, foreign rice" value="Local parboiled rice">
+        <input id="kind" placeholder="e.g. Ofada rice, parboiled rice, foreign rice">
       </div>
       <div class="field">
-        <label for="qty">Quantity / unit</label>
+        <label for="qtyN">Quantity / unit</label>
         <div class="pair">
-          <input id="qtyN" type="number" min="0" step="any" value="50" aria-label="Quantity">
+          <input id="qtyN" type="number" min="0" step="any" value="1" aria-label="Quantity">
           <select id="unit" aria-label="Unit">
-            <option value="kg" selected>kg bag</option><option value="kg-loose">kg (loose)</option><option value="litre">litre</option><option value="mudu">mudu / paint</option><option value="piece">piece / loaf</option><option value="crate">crate</option><option value="trip">trip / ride</option><option value="term">term / session</option><option value="month">month</option><option value="year">year</option><option value="GB">GB</option>
+            <option value="kg">kg bag</option><option value="kg-loose">kg (loose)</option><option value="litre">litre</option><option value="mudu">mudu / paint</option><option value="piece">piece / loaf</option><option value="crate">crate</option><option value="trip">trip / ride</option><option value="term">term / session</option><option value="month">month</option><option value="year">year</option><option value="GB">GB</option>
           </select>
         </div>
       </div>
@@ -207,22 +329,22 @@ footer small{opacity:.85}
         <label for="state">Your location in Nigeria <span class="opt">(needed for price check)</span></label>
         <div class="pair">
           <select id="state"><option value="">Choose state</option></select>
-          <input id="town" placeholder="Town / market (optional)">
+          <input id="town" placeholder="Town / market (optional)" aria-label="Town or market">
         </div>
       </div>
       <div class="field">
         <label for="oldP">Old price</label>
         <div class="pair">
-          <div class="naira"><span>₦</span><input id="oldP" inputmode="decimal" placeholder="e.g. 92,946" value="92,946"></div>
-          <input id="oldM" type="month" value="2026-02" aria-label="Month of old price">
+          <div class="naira"><span>₦</span><input id="oldP" inputmode="decimal" placeholder="e.g. 92,946"></div>
+          <input id="oldM" type="month" aria-label="Month of old price">
         </div>
         <span class="hint">Price and the month you paid it.</span>
       </div>
       <div class="field">
         <label for="newP">New price</label>
         <div class="pair">
-          <div class="naira"><span>₦</span><input id="newP" inputmode="decimal" placeholder="e.g. 112,000" value="112,000"></div>
-          <input id="newM" type="month" value="2026-03" aria-label="Month of new price">
+          <div class="naira"><span>₦</span><input id="newP" inputmode="decimal" placeholder="e.g. 112,000"></div>
+          <input id="newM" type="month" aria-label="Month of new price">
         </div>
         <span class="hint">Leave blank if you don't know it. We'll fill it only from a real price record.</span>
       </div>
@@ -234,15 +356,20 @@ footer small{opacity:.85}
     <div class="actions">
       <button class="btn" id="go" type="submit">Explain</button>
       <label class="deep"><input type="checkbox" id="deep"> Deeper answer</label>
+      <button class="btn green" id="example" type="button">Try an example</button>
       <button class="btn ghost" id="reset" type="button">Clear form</button>
     </div>
-    <p class="hint" style="margin:10px 0 0">Example filled in: NBS average price of a 50kg bag of local rice, February to March 2026. Change it to your own item.</p>
     <div class="err" id="err" role="alert"></div>
   </form>
 
+  <!-- ===== ANSWER ===== -->
   <section class="card slip" id="out" aria-live="polite">
-    <h2>Your answer <span class="tag">Output</span></h2>
-    <div id="result"><div class="empty"><div class="bigN">₦</div>Press <b>Explain</b> to see what happened to your price.</div></div>
+    <div class="slip-head">
+      <h2>Your answer <span class="tag">Output</span></h2>
+      <div class="actions" style="margin:0"><span class="toast" id="toast"></span><button class="btn ghost" id="copy" type="button" hidden>Copy answer</button></div>
+    </div>
+    <textarea id="copyBox" hidden readonly aria-label="Answer text to copy"></textarea>
+    <div id="result"><div class="empty"><div class="bigN">₦</div>Fill the form and press <b>Explain</b>, or press <b>Try an example</b> to see how it works.</div></div>
   </section>
 
   <div class="two">
@@ -253,7 +380,7 @@ footer small{opacity:.85}
         <li><b>Price check:</b> if you chose a location, our code compares your price with real price records. A clear typing slip (like an extra zero) is corrected and shown to you. Without a location, your prices are never changed.</li>
         <li><b>Our code does the maths:</b> the difference, percent change, monthly change and what ₦1,000 is worth now. The AI never calculates.</li>
         <li><b>Privacy filter:</b> phone numbers, emails, account or ID numbers and names after "my name is" are removed.</li>
-        <li><b>The AI explains</b> using only our numbers and the national figures above, in simple English.</li>
+        <li><b>The AI explains</b> using only our numbers, Nigeria's figures and your state's figures from the Price Watch board.</li>
       </ol>
       <h3 style="margin-top:16px;font-size:1rem">Exactly what was sent to the AI</h3>
       <pre class="sent" id="sent">Nothing sent yet. Press Explain to see it here.</pre>
@@ -261,7 +388,7 @@ footer small{opacity:.85}
 
     <section class="card" id="about">
       <h2>About this website</h2>
-      <p>Inflation Explainer AI was built by secondary school students at Yewa College, Ilaro, in the ByteBusters Generative AI team. We built it because our families keep asking why prices go up so fast. We wanted a tool that turns two prices into a clear story anyone can understand.</p>
+      <p>Inflation Explainer AI was built by secondary school students at Yewa College, Ilaro, in the ByteBusters Generative AI Team. Our families keep asking why prices go up so fast, so we built a tool that turns two prices into a clear story anyone can understand.</p>
       <p style="margin-bottom:0"><b>Who it helps</b></p>
       <div class="who-for"><span>Families</span><span>Students</span><span>Market traders</span><span>Young adults</span><span>Anyone paying for goods or services</span></div>
       <p style="margin-bottom:0"><b>Our guardrails</b></p>
@@ -269,7 +396,7 @@ footer small{opacity:.85}
         <li>The AI may only use the numbers we give it. It cannot make up statistics.</li>
         <li>The maths is done by code, not by the AI.</li>
         <li>Answers stay short and in simple English.</li>
-        <li>No sign-up and nothing is saved. No personal details go in or come out.</li>
+        <li>No sign-up. Nothing is saved except your light or night mode choice. No personal details go in or come out.</li>
       </ul>
     </section>
   </div>
@@ -277,22 +404,65 @@ footer small{opacity:.85}
 
 <footer>
   <div class="wrap">
-    <strong>Designed by Yewa College (ByteBusters)</strong>
+    <strong>Built with AI by Yewa College Bytebusters (Generative AI Team)</strong>
     <small>Inflation Explainer AI · Learning tool, not financial advice</small>
   </div>
 </footer>
 
 <script>
-/* ===== 1. FACTS the AI may use (update when NBS releases new CPI) ===== */
+/* ===== 1. NATIONAL FACTS the AI may use (update when NBS releases new CPI, around the 15th) ===== */
 const FACTS = {
-  headline: 14.63, food: 19.59,
-  label: "September 2026",
+  headline: 14.63, headlinePrev: 15.39,
+  food: 19.59, foodPrev: 19.57, foodMoM: -1.55,
+  label: "September 2026", prevLabel: "August",
   source: "NBS CPI report, released 15 Oct 2026"
 };
 
-/* ===== 2. REAL PRICE RECORDS for the price check =====
-   Only real, sourced prices go here. Add your own market survey rows with a state.
-   unit must match the form: kg (bag), kg-loose, litre, crate ... qty = the size. */
+/* ===== 2. STATE NOTICES for the Price Watch board =====
+   foodYoY / headlineYoY: year-on-year %, or null = "Awaiting NBS update" (never guess).
+   reason: a LIKELY, general cause in simple English. Each state gets a different one. */
+const SRC = "NBS CPI, Sep 2026";
+const STATE_NOTICES = [
+  { state:"Abia", region:"South", foodYoY:null, headlineYoY:null, month:"Sep 2026", source:SRC, reason:"" },
+  { state:"Adamawa", region:"North", foodYoY:null, headlineYoY:3.7, month:"Sep 2026", source:SRC, reason:"Overall prices rose much more slowly than in August (16.0%), likely because the new harvest reached markets." },
+  { state:"Akwa Ibom", region:"South", foodYoY:null, headlineYoY:null, month:"Sep 2026", source:SRC, reason:"" },
+  { state:"Anambra", region:"South", foodYoY:null, headlineYoY:null, month:"Sep 2026", source:SRC, reason:"" },
+  { state:"Bauchi", region:"North", foodYoY:5.3, headlineYoY:2.8, month:"Sep 2026", source:SRC, reason:"Local grains like maize and millet were likely in good supply after harvest, so prices rose slowly." },
+  { state:"Bayelsa", region:"South", foodYoY:9.3, headlineYoY:null, month:"Sep 2026", source:SRC, reason:"Fish from nearby rivers and creeks is likely cheaper to bring to market than food trucked in from far away." },
+  { state:"Benue", region:"North", foodYoY:27.3, headlineYoY:null, month:"Sep 2026", source:SRC, reason:"Benue grows a lot of food, but insecurity on farm roads likely stopped some farmers from planting and harvesting." },
+  { state:"Borno", region:"North", foodYoY:2.2, headlineYoY:4.0, month:"Sep 2026", source:SRC, reason:"More farmland was likely planted and harvested this season, adding to local food supply." },
+  { state:"Cross River", region:"South", foodYoY:null, headlineYoY:null, month:"Sep 2026", source:SRC, reason:"" },
+  { state:"Delta", region:"South", foodYoY:30.6, headlineYoY:null, month:"Sep 2026", source:SRC, reason:"Higher fuel costs for trucks and boats likely made moving food across roads and creeks more expensive." },
+  { state:"Ebonyi", region:"South", foodYoY:25.7, headlineYoY:null, month:"Sep 2026", source:SRC, reason:"Heavy rains likely damaged roads, slowing rice and yams on their way to markets." },
+  { state:"Edo", region:"South", foodYoY:null, headlineYoY:null, month:"Sep 2026", source:SRC, reason:"" },
+  { state:"Ekiti", region:"South", foodYoY:null, headlineYoY:null, month:"Sep 2026", source:SRC, reason:"" },
+  { state:"Enugu", region:"South", foodYoY:null, headlineYoY:null, month:"Sep 2026", source:SRC, reason:"" },
+  { state:"FCT Abuja", region:"North", foodYoY:null, headlineYoY:null, month:"Sep 2026", source:SRC, reason:"" },
+  { state:"Gombe", region:"North", foodYoY:null, headlineYoY:7.3, month:"Sep 2026", source:SRC, reason:"Overall prices rose slowly, likely because local farms kept markets supplied with grains and beans." },
+  { state:"Imo", region:"South", foodYoY:33.8, headlineYoY:null, month:"Sep 2026", source:SRC, reason:"Much food likely travels a long way from northern farms, and rising transport fares add to the price." },
+  { state:"Jigawa", region:"North", foodYoY:8.1, headlineYoY:7.0, month:"Sep 2026", source:SRC, reason:"Good stocks of rice and grains in local stores likely kept price rises small." },
+  { state:"Kaduna", region:"North", foodYoY:null, headlineYoY:null, month:"Sep 2026", source:SRC, reason:"" },
+  { state:"Kano", region:"North", foodYoY:null, headlineYoY:null, month:"Sep 2026", source:SRC, reason:"" },
+  { state:"Katsina", region:"North", foodYoY:null, headlineYoY:null, month:"Sep 2026", source:SRC, reason:"" },
+  { state:"Kebbi", region:"North", foodYoY:5.4, headlineYoY:6.2, month:"Sep 2026", source:SRC, reason:"Kebbi grows a lot of rice, so plenty of local supply likely kept prices steady." },
+  { state:"Kogi", region:"North", foodYoY:8.6, headlineYoY:7.5, month:"Sep 2026", source:SRC, reason:"Yams and cassava from nearby villages likely kept local markets well supplied." },
+  { state:"Kwara", region:"North", foodYoY:null, headlineYoY:null, month:"Sep 2026", source:SRC, reason:"" },
+  { state:"Lagos", region:"South", foodYoY:34.4, headlineYoY:17.3, month:"Sep 2026", source:SRC, reason:"Almost all food is trucked in from other states, so transport, shop rent and market levies likely add up before it reaches buyers." },
+  { state:"Nasarawa", region:"North", foodYoY:5.3, headlineYoY:null, month:"Sep 2026", source:SRC, reason:"Buyers can likely get food straight from nearby farms, so fewer transport costs are added." },
+  { state:"Niger", region:"North", foodYoY:null, headlineYoY:null, month:"Sep 2026", source:SRC, reason:"" },
+  { state:"Ogun", region:"South", foodYoY:24.2, headlineYoY:null, month:"Sep 2026", source:SRC, reason:"Being next to Lagos, strong demand from the city likely pulls Ogun market prices up too." },
+  { state:"Ondo", region:"South", foodYoY:31.5, headlineYoY:null, month:"Sep 2026", source:SRC, reason:"Insecurity in some farming areas likely kept farmers off their land, so less food reached markets." },
+  { state:"Osun", region:"South", foodYoY:25.2, headlineYoY:null, month:"Sep 2026", source:SRC, reason:"Fertiliser and farm chemicals likely cost more because of the exchange rate, raising the cost of growing food." },
+  { state:"Oyo", region:"South", foodYoY:24.5, headlineYoY:null, month:"Sep 2026", source:SRC, reason:"Traders likely passed on higher costs for storage, shop rent and generator fuel to buyers." },
+  { state:"Plateau", region:"North", foodYoY:null, headlineYoY:null, month:"Sep 2026", source:SRC, reason:"" },
+  { state:"Rivers", region:"South", foodYoY:26.8, headlineYoY:null, month:"Sep 2026", source:SRC, reason:"A big city population likely keeps demand high while most food has to come from far away." },
+  { state:"Sokoto", region:"North", foodYoY:6.1, headlineYoY:8.0, month:"Sep 2026", source:SRC, reason:"Dry-season farming likely kept onions, tomatoes and grains coming into markets." },
+  { state:"Taraba", region:"North", foodYoY:-7.5, headlineYoY:1.8, month:"Sep 2026", source:SRC, reason:"Food got cheaper than last year. A good harvest likely filled markets with maize, rice and yams." },
+  { state:"Yobe", region:"North", foodYoY:-0.4, headlineYoY:7.3, month:"Sep 2026", source:SRC, reason:"Food prices are almost the same as last year. New harvest supply likely balanced out higher costs." },
+  { state:"Zamfara", region:"North", foodYoY:null, headlineYoY:null, month:"Sep 2026", source:SRC, reason:"" }
+];
+
+/* ===== 3. REAL PRICE RECORDS for the price check (add your own market survey rows with a state) ===== */
 const PRICE_RECORDS = [
   { match:["rice"], not:["ofada","foreign","imported","thai","basmati"], kind:"Local rice (short grain)", qty:50, unit:"kg", price:112000, state:"", month:"2026-03", source:"NBS Selected Food Price Watch, March 2026 (national average)" },
   { match:["rice"], any:["foreign","imported","thai"], kind:"Imported rice", qty:50, unit:"kg", price:133975, state:"", month:"2026-03", source:"NBS Selected Food Price Watch, March 2026 (national average)" },
@@ -302,20 +472,103 @@ const PRICE_RECORDS = [
   { match:["ginger"], kind:"Fresh ginger", qty:1, unit:"kg-loose", price:5541.25, state:"", month:"2026-03", source:"NBS Selected Food Price Watch, March 2026 (national average)" }
 ];
 
-const STATES = ["Abia","Adamawa","Akwa Ibom","Anambra","Bauchi","Bayelsa","Benue","Borno","Cross River","Delta","Ebonyi","Edo","Ekiti","Enugu","FCT Abuja","Gombe","Imo","Jigawa","Kaduna","Kano","Katsina","Kebbi","Kogi","Kwara","Lagos","Nasarawa","Niger","Ogun","Ondo","Osun","Oyo","Plateau","Rivers","Sokoto","Taraba","Yobe","Zamfara"];
-
+/* ===== 4. HELPERS ===== */
 const $ = id => document.getElementById(id);
-$("fHead").textContent = FACTS.headline + "%";
-$("fFood").textContent = FACTS.food + "%";
-$("fSrc").textContent = `Year-on-year, ${FACTS.label}. Source: ${FACTS.source}.`;
-STATES.forEach(s => { const o=document.createElement("option"); o.textContent=s; o.value=s; $("state").appendChild(o); });
-$("state").value = "Ogun";
-
-const naira = n => "₦" + Number(n).toLocaleString("en-NG", {maximumFractionDigits: n % 1 ? 2 : 0});
+const naira = n => "₦" + Number(n).toLocaleString("en-NG", {maximumFractionDigits: Math.abs(n % 1) > 0.004 ? 2 : 0});
 const pct = n => (n > 0 ? "+" : "") + n.toFixed(2) + "%";
 const parseNaira = s => { const t = String(s||"").replace(/[₦,\s]/g,""); if(!t) return null; const n = Number(t); return isFinite(n) && n > 0 ? n : NaN; };
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const reduceMotion = () => matchMedia("(prefers-reduced-motion: reduce)").matches;
+const band = v => v == null ? "n" : v >= 20 ? "r" : v >= 10 ? "m" : "f";
+const findState = name => STATE_NOTICES.find(s => s.state === name);
 
-/* ===== 3. PRIVACY FILTER ===== */
+/* ===== 5. NIGHT MODE: follows the device first, then remembers the user's choice ===== */
+$("theme").addEventListener("click", () => {
+  const root = document.documentElement;
+  const nowDark = root.getAttribute("data-theme") ? root.getAttribute("data-theme") === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
+  const next = nowDark ? "light" : "dark";
+  root.setAttribute("data-theme", next);
+  try { localStorage.setItem("iea-theme", next); } catch(e){}
+});
+
+/* ===== 6. PHONE MENU ===== */
+$("menu").addEventListener("click", () => {
+  const open = $("nav").classList.toggle("open");
+  $("menu").setAttribute("aria-expanded", open);
+});
+$("nav").addEventListener("click", e => { if (e.target.tagName === "A") { $("nav").classList.remove("open"); $("menu").setAttribute("aria-expanded", false); } });
+
+/* ===== 7. NATIONAL FACTS BOX ===== */
+$("fHead").textContent = FACTS.headline + "%";
+$("fFood").textContent = FACTS.food + "%";
+$("fHeadWas").textContent = `${FACTS.headline < FACTS.headlinePrev ? "▼ down" : "▲ up"} from ${FACTS.headlinePrev}% in ${FACTS.prevLabel}`;
+$("fFoodWas").textContent = `${FACTS.food < FACTS.foodPrev ? "▼ down" : "▲ up"} from ${FACTS.foodPrev}% in ${FACTS.prevLabel}`;
+$("fSrc").textContent = `Year-on-year, ${FACTS.label}. Source: ${FACTS.source}.`;
+$("updated").textContent = `Last updated: ${FACTS.label} figures (${FACTS.source}). Next NBS release is usually around the 15th of the month.`;
+
+/* ===== 8. PRICE WATCH: ticker + state cards ===== */
+function buildTicker(){
+  const known = STATE_NOTICES.filter(s => s.foodYoY != null).sort((a,b) => b.foodYoY - a.foodYoY);
+  const bits = [`<span>Nigeria: food prices <b class="${band(FACTS.food)}">up ${FACTS.food}%</b> in a year · all prices up ${FACTS.headline}%</span>`]
+    .concat(known.map(s => `<span>${esc(s.state)}: food prices <b class="${band(s.foodYoY)}">${s.foodYoY < 0 ? "down " + Math.abs(s.foodYoY) : "up " + s.foodYoY}%</b> in a year</span>`));
+  $("track").innerHTML = bits.join("") + bits.join(""); // twice, for a seamless loop
+}
+const pause = on => $("ticker").classList.toggle("paused", on);
+$("ticker").addEventListener("touchstart", () => pause(true), {passive:true});
+$("ticker").addEventListener("touchend", () => setTimeout(() => pause(false), 2500));
+
+let filter = "all";
+function renderStates(){
+  const q = $("find").value.trim().toLowerCase();
+  const mine = $("state").value;
+  let list = STATE_NOTICES.filter(s => !q || s.state.toLowerCase().includes(q));
+  // states with NBS figures first, then those awaiting an update
+  list = list.slice().sort((a,b) => ((a.foodYoY ?? a.headlineYoY) == null) - ((b.foodYoY ?? b.headlineYoY) == null));
+  if (filter === "North" || filter === "South") list = list.filter(s => s.region === filter);
+  if (filter === "fast") list = list.filter(s => s.foodYoY != null).sort((a,b) => b.foodYoY - a.foodYoY);
+  if (filter === "slow") list = list.filter(s => s.foodYoY != null).sort((a,b) => a.foodYoY - b.foodYoY);
+  if (filter === "mine") list = mine ? list.filter(s => s.state === mine) : [];
+  if (!list.length) {
+    $("states").innerHTML = `<div class="none">${filter === "mine" && !mine ? "Choose your state in the form below first." : "No state matches your search."}</div>`;
+    return;
+  }
+  $("states").innerHTML = list.map(s => {
+    const b = band(s.foodYoY ?? s.headlineYoY);
+    const arrow = (s.foodYoY ?? s.headlineYoY) == null ? "?" : (s.foodYoY ?? s.headlineYoY) < 0 ? "▼" : "▲";
+    const food = s.foodYoY == null ? `<span class="wait">Awaiting NBS update</span>` : `<b class="food">${s.foodYoY > 0 ? "+" : ""}${s.foodYoY}%</b>`;
+    const head = s.headlineYoY == null ? `<span class="wait">Awaiting NBS update</span>` : `<b>${s.headlineYoY > 0 ? "+" : ""}${s.headlineYoY}%</b>`;
+    const why = s.reason ? `<p><b>Why it changed:</b> ${esc(s.reason)}</p>` : `<p class="src">We will add a reason when NBS releases this state's figures.</p>`;
+    return `<article class="st ${b} ${s.state === mine ? "mine" : ""}" data-state="${esc(s.state)}">
+      <h3><span>${esc(s.state)}<br><span class="reg">${s.region}${s.state === mine ? " · your state" : ""}</span></span><span class="arrow" aria-hidden="true">${arrow}</span></h3>
+      <div class="nums"><div><small>Food prices</small>${food}</div><div class="hd"><small>All prices</small>${head}</div></div>
+      ${why}
+      <span class="src">${esc(s.month)} · ${esc(s.source)}</span>
+    </article>`;
+  }).join("");
+}
+document.querySelectorAll(".chip").forEach(c => c.addEventListener("click", () => {
+  filter = c.dataset.f;
+  document.querySelectorAll(".chip").forEach(x => x.setAttribute("aria-pressed", x === c));
+  renderStates();
+}));
+$("find").addEventListener("input", renderStates);
+
+/* ===== 9. FORM: state list, progress bar ===== */
+STATE_NOTICES.forEach(s => { const o = document.createElement("option"); o.value = o.textContent = s.state; $("state").appendChild(o); });
+let explained = false;
+function progress(){
+  const done = {
+    item: !!$("item").value.trim(),
+    loc: !!$("state").value,
+    price: !!($("oldP").value.trim() && $("newP").value.trim()),
+    go: explained
+  };
+  document.querySelectorAll("#steps li").forEach(li => li.classList.toggle("on", done[li.dataset.s]));
+}
+$("form").addEventListener("input", () => { explained = false; progress(); });
+$("state").addEventListener("change", () => { renderStates(); progress(); });
+
+/* ===== 10. PRIVACY FILTER: removes personal details before anything reaches the AI ===== */
 function privacyFilter(text){
   return String(text||"")
     .replace(/my name is\s+[A-Za-z'-]+(\s+[A-Za-z'-]+)?/gi, "my name is [removed]")
@@ -325,7 +578,7 @@ function privacyFilter(text){
     .slice(0, 300);
 }
 
-/* ===== 4. CATEGORY (picks food or headline comparison) ===== */
+/* ===== 11. CATEGORY: decides whether we compare with food or headline inflation ===== */
 const FOODWORDS = ["rice","garri","beans","bread","egg","onion","ginger","yam","tomato","pepper","oil","flour","semovita","beef","meat","fish","chicken","milk","sugar","noodle","indomie","maize","corn","plantain","cassava","fufu","elubo","spaghetti","pasta","salt","palm"];
 function category(text){
   const t = text.toLowerCase();
@@ -335,7 +588,7 @@ function category(text){
   return "goods";
 }
 
-/* ===== 5. PRICE CHECK (only with a location; never invents a price) ===== */
+/* ===== 12. PRICE CHECK: only with a location; never invents a price ===== */
 function findRecord(text, unit, qty, state){
   const t = text.toLowerCase();
   const fits = PRICE_RECORDS.filter(r =>
@@ -360,7 +613,7 @@ function checkPrice(value, rec, label, notes){
   return value;
 }
 
-/* ===== 6. MATHS (done by code, not by the AI) ===== */
+/* ===== 13. MATHS: done by our code, never by the AI ===== */
 function monthsBetween(a, b){
   if (!a || !b) return null;
   const [y1,m1] = a.split("-").map(Number), [y2,m2] = b.split("-").map(Number);
@@ -375,7 +628,7 @@ function doMaths(oldP, newP, months){
   return { diff, change, months, monthly, yearly, worth };
 }
 
-/* ===== 7. OFFLINE DEMO EXPLAINER (used only if the AI server can't be reached) ===== */
+/* ===== 14. OFFLINE DEMO EXPLAINER: used only when the AI server can't be reached ===== */
 const CAUSES = {
   food: ["Fuel and transport costs to move food from farms to markets are likely higher.","A weaker naira likely makes imported fertiliser, seeds and machines cost more.","Supply is likely lower because of the season, weather, or food spoiling before it reaches market.","Demand is likely higher, for example during festive seasons or school resumption.","Insecurity on some farm roads likely makes it harder for farmers to plant, harvest and move goods."],
   transport: ["The pump price of fuel is likely higher, so drivers charge more per trip.","A weaker naira likely raises the cost of spare parts and tyres.","More people needing rides at busy times likely pushes fares up.","Bad roads likely mean slower trips and more repairs for drivers."],
@@ -391,21 +644,22 @@ const TIPS = {
 function demoExplain(d){
   const n = d.deeper ? 4 : 3, k = d.deeper ? 4 : 2;
   const up = d.newPrice >= d.oldPrice;
-  const word = up ? "went up" : "went down";
   const ref = d.category === "food" ? ["food", FACTS.food] : ["headline", FACTS.headline];
+  const stateV = d.category === "food" ? d.facts.stateFood : d.facts.stateHeadline;
   const span = d.months ? ` over ${d.months} month${d.months>1?"s":""}` : "";
+  const stateBit = stateV != null ? ` In ${d.facts.state}, ${ref[0]} inflation was ${stateV}%.` : "";
   return {
-    headline: `${d.item} ${word} from ${naira(d.oldPrice)} to ${naira(d.newPrice)}, a change of ${naira(Math.abs(d.diff))} (${pct(d.change)})${span}.`,
-    explain: `${up ? "This means you now pay more for the same" : "This means you now pay less for the same"} ${d.quantity}. ${up ? `Your ₦1,000 now buys only what about ${naira(Math.round(d.worth))} bought before.` : `Your ₦1,000 now buys what about ${naira(Math.round(d.worth))} bought before.`} Prices change because the cost of making, moving and selling things changes.` + (d.deeper ? ` When the price of one item rises faster than the national rate, it hurts family budgets more, because many families spend a big share of their money on it. A short price fall can also happen after harvest or when more sellers bring goods to market.` : ""),
+    headline: `${d.item} ${up ? "went up" : "went down"} from ${naira(d.oldPrice)} to ${naira(d.newPrice)}, a change of ${naira(Math.abs(d.diff))} (${pct(d.change)})${span}.`,
+    explain: `${up ? "You now pay more for the same" : "You now pay less for the same"} ${d.quantity}. Your ₦1,000 now buys what about ${naira(Math.round(d.worth))} bought before. Prices change because the cost of making, moving and selling things changes.` + (d.deeper ? ` When one item rises faster than the national rate, it hurts family budgets more, because many families spend a big share of their money on it. Prices can also fall for a while after harvest, when more sellers bring goods to market.` : ""),
     causes: (up ? CAUSES[d.category] : ["More supply likely reached the market, for example after harvest.","Transport or fuel costs may have eased a little.","Fewer buyers likely means sellers drop prices to sell faster.","A steadier naira may have reduced import costs."]).slice(0, n),
-    compare: d.yearly != null
+    compare: (d.yearly != null
       ? `At this pace the item would rise about ${d.yearly.toFixed(1)}% in a year, ${d.yearly > ref[1] ? "faster" : "slower"} than Nigeria's ${ref[0]} inflation of ${ref[1]}% (${FACTS.label}).`
-      : `Nigeria's ${ref[0]} inflation was ${ref[1]}% year-on-year in ${FACTS.label}; add both months to compare your item's yearly rate.`,
-    tips: TIPS[d.category].slice(0, k)
+      : `Nigeria's ${ref[0]} inflation was ${ref[1]}% year-on-year in ${FACTS.label}. Add both months to compare your item's yearly rate.`) + stateBit,
+    tips: TIPS[d.category].slice(0, k), answer: ""
   };
 }
 
-/* ===== 8. CALL THE AI (our server keeps the API key secret) ===== */
+/* ===== 15. CALL THE AI through our server (the API key stays secret on the server) ===== */
 async function askAI(payload){
   const ctrl = new AbortController(); const timer = setTimeout(() => ctrl.abort(), 25000);
   try {
@@ -419,9 +673,9 @@ async function askAI(payload){
   } finally { clearTimeout(timer); }
 }
 const unique = arr => { const seen = new Set(); return (arr||[]).filter(c => { const k = String(c).toLowerCase().replace(/[^a-z]/g,"").slice(0,28); if (seen.has(k)) return false; seen.add(k); return true; }); };
-const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 
-/* ===== 9. MAIN ===== */
+/* ===== 16. MAIN: runs when the user presses Explain ===== */
+let lastText = "";
 $("form").addEventListener("submit", async e => {
   e.preventDefault();
   $("err").textContent = "";
@@ -444,7 +698,7 @@ $("form").addEventListener("submit", async e => {
   const rec = state ? findRecord(text, unit, qtyN, state) : null;
 
   if (!state) {
-    notes.push({t:"info", m:"Add your state to let us check your prices. Without a location we use your numbers exactly as typed."});
+    notes.push({t:"info", m:"Add your state to let us check your prices and compare with your state. Without a location we use your numbers exactly as typed."});
   } else {
     oldP = checkPrice(oldP, rec, "old price", notes);
     newP = checkPrice(newP, rec, "new price", notes);
@@ -460,37 +714,53 @@ $("form").addEventListener("submit", async e => {
   else if (months < 6) notes.push({t:"info", m:`Your prices are only ${months} month${months>1?"s":""} apart, so the yearly pace is a rough guess. It assumes prices keep rising at this speed for 12 months, which rarely happens. Prices a year apart give a fairer comparison.`});
   const m = doMaths(oldP, newP, months);
   const cat = category(text);
-  const quantity = `${qtyN} ${unitLabel}`;
+  const st = state ? findState(state) : null;
 
   const payload = {
-    item: kind ? `${item} (${kind})` : item, quantity, location: state ? (town ? `${town}, ${state}` : state) : "not given",
+    item: kind ? `${item} (${kind})` : item, quantity: `${qtyN} ${unitLabel}`,
+    location: state ? (town ? `${town}, ${state}` : state) : "not given",
     oldPrice: oldP, newPrice: newP, oldMonth: $("oldM").value || null, newMonth: $("newM").value || null,
     months, diff: +m.diff.toFixed(2), change: +m.change.toFixed(2),
     monthly: m.monthly != null ? +m.monthly.toFixed(2) : null, yearly: m.yearly != null ? +m.yearly.toFixed(2) : null,
     worth: +m.worth.toFixed(2), category: cat, question: question || null, deeper,
-    facts: FACTS
+    facts: { headline: FACTS.headline, food: FACTS.food, label: FACTS.label, source: FACTS.source,
+             state: st ? st.state : "", stateFood: st ? st.foodYoY : null, stateHeadline: st ? st.headlineYoY : null }
   };
   $("sent").textContent = JSON.stringify(payload, null, 2);
 
   $("go").disabled = true;
+  $("copy").hidden = true; $("copyBox").hidden = true; $("toast").textContent = "";
   $("result").innerHTML = `<div class="loading"><span class="dot"></span>Our code has done the maths. The AI is writing your explanation...</div>`;
+  $("out").scrollIntoView({behavior: reduceMotion() ? "auto" : "smooth", block:"start"});
   const ai = await askAI(payload);
   $("go").disabled = false;
-  render(payload, m, ai, notes);
-  $("out").scrollIntoView({behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block:"start"});
+  explained = true; progress();
+  render(payload, m, ai, notes, st);
 });
 
-function render(d, m, ai, notes){
+/* ===== 17. SHOW THE 8-PART ANSWER ===== */
+function countUp(el){
+  const to = Number(el.dataset.to), fmt = el.dataset.fmt;
+  const show = v => fmt === "naira" ? (to >= 0 ? "+" : "−") + naira(Math.abs(v)) : fmt === "pct" ? pct(v) : naira(v);
+  if (reduceMotion()) { el.textContent = show(to); return; }
+  const t0 = performance.now(), dur = 900;
+  const step = t => { const p = Math.min(1, (t - t0) / dur), e = 1 - Math.pow(1 - p, 3); el.textContent = show(p < 1 ? Math.round(to * e * 100) / 100 : to); if (p < 1) requestAnimationFrame(step); };
+  requestAnimationFrame(step);
+}
+function render(d, m, ai, notes, st){
   const up = m.diff >= 0, cls = up ? "up" : "dn";
   const causes = unique(ai.causes).slice(0, d.deeper ? 4 : 3);
   const tips = unique(ai.tips).slice(0, d.deeper ? 4 : 2);
-  const ref = d.category === "food" ? {n:"Food inflation", v:FACTS.food} : {n:"Headline inflation", v:FACTS.headline};
-  const other = d.category === "food" ? {n:"Headline inflation", v:FACTS.headline} : {n:"Food inflation", v:FACTS.food};
+  const isFood = d.category === "food";
+  const natV = isFood ? FACTS.food : FACTS.headline;
+  const stV = st ? (isFood ? st.foodYoY : st.headlineYoY) : null;
+  const kindWord = isFood ? "food inflation" : "headline inflation";
   const rows = [];
-  if (m.yearly != null) rows.push({n:"Your item (yearly pace)", v:m.yearly, item:true});
-  rows.push(ref, other);
-  const maxV = Math.max(...rows.map(r => Math.abs(r.v)), 1);
-  const worthPct = Math.max(2, Math.min(100, m.worth / 10));
+  if (m.yearly != null) rows.push({n:"Your item (yearly pace)", v:m.yearly, c:"var(--green)"});
+  if (st) rows.push({n:`${st.state} ${isFood ? "food" : "all prices"}`, v:stV, c:"var(--brown)"});
+  rows.push({n:`Nigeria ${isFood ? "food" : "all prices"}`, v:natV, c:"var(--gold)"});
+  const maxV = Math.max(...rows.filter(r => r.v != null).map(r => Math.abs(r.v)), 1);
+  const worthPct = Math.max(3, Math.min(100, m.worth / 10));
 
   $("result").innerHTML = `
     ${notes.length ? `<div class="notes">${notes.map(n => `<div class="note ${n.t==="info"?"info":""}">${esc(n.m)}</div>`).join("")}</div>` : ""}
@@ -502,26 +772,26 @@ function render(d, m, ai, notes){
           <li><span>New price</span><span>${naira(d.newPrice)}</span></li>
           <li><span>Change ÷ old × 100</span><span>${pct(m.change)}</span></li>
           <li><span>Months between</span><span>${m.months ?? "not given"}</span></li>
-          <li><span>1,000 × old ÷ new</span><span>${naira(m.worth.toFixed(2))}</span></li>
+          <li><span>1,000 × old ÷ new</span><span>${naira(+m.worth.toFixed(2))}</span></li>
         </ul>
       </div>
       <div class="sec">
         <h3><span class="num">2</span>Difference in price</h3>
-        <div class="big ${cls}">${up ? "+" : "−"}${naira(Math.abs(m.diff))}</div>
+        <div class="big ${cls}" data-to="${m.diff}" data-fmt="naira">${up ? "+" : "−"}${naira(Math.abs(m.diff))}</div>
         <p class="sub">${up ? "More" : "Less"} for the same ${esc(d.quantity)} · <b class="${cls}">${pct(m.change)}</b></p>
       </div>
       <div class="sec">
         <h3><span class="num">3</span>Monthly price change</h3>
-        ${m.monthly != null ? `<div class="big ${cls}">${pct(m.monthly)}</div><p class="sub">on average each month, over ${m.months} month${m.months>1?"s":""}</p>` : `<p class="sub">Add both months to see this.</p>`}
+        ${m.monthly != null ? `<div class="big ${cls}" data-to="${m.monthly}" data-fmt="pct">${pct(m.monthly)}</div><p class="sub">on average each month, over ${m.months} month${m.months>1?"s":""}</p>` : `<p class="sub">Add both months to see this.</p>`}
       </div>
       <div class="sec">
         <h3><span class="num">4</span>What ₦1,000 is worth now</h3>
-        <div class="notewrap"><div class="notebar" role="img" aria-label="₦1,000 now buys what ${naira(Math.round(m.worth))} bought before"><i style="width:${worthPct}%">${naira(Math.round(m.worth))}</i></div></div>
+        <div class="notebar" role="img" aria-label="₦1,000 now buys what ${naira(Math.round(m.worth))} bought before"><i id="note" data-w="${worthPct}">${naira(Math.round(m.worth))}</i></div>
         <p class="sub">${up ? `₦1,000 now buys what ${naira(Math.round(m.worth))} bought before. You lost ${naira(Math.round(1000 - m.worth))} of buying power on this item.` : `₦1,000 now buys what ${naira(Math.round(m.worth))} bought before. Good news on this item.`}</p>
       </div>
       <div class="sec wide">
         <h3><span class="num">5</span>The AI's explanation</h3>
-        <div class="who ${ai.source==="demo"?"demo":""}">${ai.source==="demo" ? "Offline demo answer · connect the AI server for live answers" : (d.deeper ? "AI answer · deeper" : "AI answer")}</div>
+        <span class="who ${ai.source==="demo"?"demo":""}">${ai.source==="demo" ? "Offline demo answer · connect the AI server for live answers" : (d.deeper ? "AI answer · deeper" : "AI answer")}</span>
         <p class="ai-head">${esc(ai.headline)}</p>
         <p style="margin:0">${esc(ai.explain)}</p>
         ${ai.answer ? `<p style="margin:10px 0 0"><b>Your question:</b> ${esc(ai.answer)}</p>` : ""}
@@ -532,22 +802,71 @@ function render(d, m, ai, notes){
       </div>
       <div class="sec">
         <h3><span class="num">7</span>Compared with Nigeria</h3>
-        <div class="bars">${rows.map(r => `<div class="bar ${r.item?"item":""}"><span>${r.n}</span><div class="track"><div class="fill" style="width:${Math.max(2, Math.abs(r.v)/maxV*100)}%"></div></div><b>${r.v.toFixed(1)}%</b></div>`).join("")}</div>
-        <p class="sub" style="margin-top:8px">${esc(ai.compare)}</p>
+        <div class="bars">${rows.map(r => `<div class="brow"><span>${esc(r.n)}</span><div class="track">${r.v == null ? "" : `<div class="fill" data-w="${Math.max(3, Math.abs(r.v)/maxV*100)}" style="background:${r.v < 0 ? "var(--fall)" : r.c}"></div>`}</div><b>${r.v == null ? "—" : r.v.toFixed(1) + "%"}</b></div>`).join("")}</div>
+        ${st && stV == null ? `<p class="sub">${esc(st.state)}'s ${kindWord} is awaiting the next NBS update.</p>` : ""}
+        <p class="sub">${esc(ai.compare)}</p>
       </div>
       <div class="sec wide">
         <h3><span class="num">8</span>Smart ways to cope</h3>
         <ul class="clean">${tips.map(t => `<li>${esc(t)}</li>`).join("")}</ul>
       </div>
     </div>
-    <div class="next"><b>What next?</b> ${d.deeper ? "Try another item your family buys every week and compare the two." : "Tick <b>Deeper answer</b> and press Explain again for more causes and tips."} Nigeria's figures are from ${esc(FACTS.label)} (${esc(FACTS.source)}).</div>`;
+    <div class="next"><b>What next?</b> ${d.deeper ? "Try another item your family buys every week and compare the two." : "Tick <b>Deeper answer</b> and press Explain again for more causes and tips."} ${st ? `See how other states compare on the <a href="#watch" style="color:#F5C443">Price Watch board</a>.` : "Choose your state to compare with where you live."}</div>`;
+
+  // animations: count up numbers, shrink the ₦1,000 note, grow the bars
+  document.querySelectorAll("#result [data-to]").forEach(countUp);
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    const note = $("note"); if (note) note.style.width = note.dataset.w + "%";
+    document.querySelectorAll("#result .fill").forEach(f => f.style.width = f.dataset.w + "%");
+  }));
+
+  // plain text copy of the answer
+  lastText = [
+    "INFLATION EXPLAINER AI",
+    `${d.item}, ${d.quantity}${d.location !== "not given" ? ", " + d.location : ""}`,
+    `Old price: ${naira(d.oldPrice)}  New price: ${naira(d.newPrice)}`,
+    `Difference: ${up ? "+" : "-"}${naira(Math.abs(m.diff))} (${pct(m.change)})`,
+    m.monthly != null ? `Monthly change: ${pct(m.monthly)} over ${m.months} month(s)` : "",
+    `₦1,000 is now worth: ${naira(Math.round(m.worth))}`,
+    "", ai.headline, ai.explain, ai.answer ? "Your question: " + ai.answer : "",
+    "", "Why it likely happens:", ...causes.map(c => "- " + c),
+    "", "Compared with Nigeria: " + ai.compare,
+    "", "Smart ways to cope:", ...tips.map(t => "- " + t),
+    "", "Built with AI by Yewa College Bytebusters (Generative AI Team)"
+  ].filter((l, i, a) => l !== "" || a[i-1] !== "").join("\n");
+  $("copy").hidden = false;
 }
 
-$("reset").addEventListener("click", () => {
-  ["item","kind","town","oldP","newP","q"].forEach(id => $(id).value = "");
-  $("qtyN").value = 1; $("state").value = ""; $("oldM").value = ""; $("newM").value = ""; $("deep").checked = false; $("err").textContent = "";
-  $("item").focus();
+/* ===== 18. COPY ANSWER (with a fallback if copying is blocked) ===== */
+$("copy").addEventListener("click", () => {
+  const fallback = () => { const b = $("copyBox"); b.value = lastText; b.hidden = false; b.focus(); b.select(); $("toast").textContent = "Press and hold the text to copy it"; };
+  try {
+    navigator.clipboard.writeText(lastText).then(() => { $("toast").textContent = "Copied"; setTimeout(() => $("toast").textContent = "", 2500); }, fallback);
+  } catch(e) { fallback(); }
 });
+
+/* ===== 19. TRY AN EXAMPLE (real NBS prices) and CLEAR ===== */
+function fillExample(){
+  $("item").value = "Rice"; $("kind").value = "Local parboiled rice";
+  $("qtyN").value = 50; $("unit").value = "kg";
+  $("state").value = "Ogun"; $("town").value = "Ilaro";
+  $("oldP").value = "92,946"; $("oldM").value = "2026-02";
+  $("newP").value = "112,000"; $("newM").value = "2026-03";
+  $("q").value = ""; $("deep").checked = false;
+  renderStates(); progress();
+}
+$("example").addEventListener("click", () => { fillExample(); $("form").requestSubmit(); });
+$("reset").addEventListener("click", () => {
+  ["item","kind","town","oldP","newP","q","oldM","newM"].forEach(id => $(id).value = "");
+  $("qtyN").value = 1; $("unit").value = "kg"; $("state").value = ""; $("deep").checked = false; $("err").textContent = "";
+  explained = false; renderStates(); progress(); $("item").focus();
+});
+
+/* ===== START ===== */
+buildTicker();
+fillExample();   // open with a real example filled in, so visitors see how it works
+renderStates();
+progress();
 </script>
 </body>
 </html>
