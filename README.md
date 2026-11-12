@@ -2,9 +2,22 @@
 
 Built with AI by Yewa College Bytebusters (Generative AI Team).
 
+## New in version 3
+
+| Upgrade | What it does |
+|---|---|
+| **Family Basket** | A family types what it buys each month, before and now. Our code works out the family's own inflation rate, the yearly pace and which items pushed it up most; the AI explains. Saved on the phone only. |
+| **17 languages** | "Explain in" lets the AI write the explanation in Hausa, Yoruba, Igbo, Pidgin and 13 more Nigerian languages. The maths never changes. |
+| **WhatsApp price card** | "Share price card" makes a picture of the result (old → new price, % change, what ₦1,000 buys now, NBS rate) to share. |
+| **Ready to scale** | Only our website can call the AI, 40 explanations per hour per visitor, repeated questions are free, 20-second timeout (`api/_lib/shared.js`). |
+| **SEO, AEO, GEO** | Page address, social preview, visible FAQ with labels for answer engines, `robots.txt` (AI search welcome), `sitemap.xml`, `llms.txt`. |
+| **Tests** | `node tools/test.js`: 12 checks, no key needed. |
+
 ## Files
 - `index.html`: the whole website (form, maths, privacy filter, price check, Price Watch board, night mode, results, About, footer).
-- `api/explain.js`: the server route. It holds the AI instructions and calls OpenAI with the secret key.
+- `api/explain.js`: the server route. It holds the AI instructions (normal and Family Basket) and calls OpenAI with the secret key.
+- `api/_lib/shared.js`: the front door (our website only, fair-use limit, saved answers, timeout) and the 17 languages.
+- `robots.txt`, `sitemap.xml`, `llms.txt`, `og-image.png`: help Google, answer engines and AI assistants find and describe the site.
 
 ## Put it online (Vercel, about 10 minutes)
 1. Upload `index.html` and the `api` folder (keep the folder name) to a GitHub repository.

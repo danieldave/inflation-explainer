@@ -1,11 +1,24 @@
 <!doctype html>
-<html lang="en">
+<html lang="en-NG">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Inflation Explainer AI</title>
+<title>Inflation Explainer AI: why did prices go up in Nigeria? Free price checker</title>
 <meta name="claude:viewport-fit-sides" content="cover">
-<meta name="description" content="Type an item and two prices. Our code works out the exact change, the AI explains it in simple English, and the Price Watch board shows what is changing in every Nigerian state.">
+<meta name="description" content="Type an item and two prices: our code works out the exact change and your family's own inflation rate, and AI explains it in 17 Nigerian languages.">
+<link rel="canonical" href="https://inflation-explainer.vercel.app/">
+<meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large">
+<meta name="theme-color" content="#0F3D22">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Inflation Explainer AI">
+<meta property="og:title" content="Inflation Explainer AI: why did prices go up in Nigeria? Free price checker">
+<meta property="og:description" content="Type an item and two prices: our code works out the exact change and your family's own inflation rate, and AI explains it in 17 Nigerian languages.">
+<meta property="og:url" content="https://inflation-explainer.vercel.app/">
+<meta property="og:image" content="https://inflation-explainer.vercel.app/og-image.png">
+<meta property="og:locale" content="en_NG">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230F3D22'/%3E%3Ctext x='32' y='45' font-size='38' text-anchor='middle' fill='%23E9A80F' font-family='Arial' font-weight='bold'%3E%E2%82%A6%3C/text%3E%3C/svg%3E">
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "EducationalOrganization", "@id": "https://inflation-explainer.vercel.app/#org", "name": "ByteBusters Coding Club, Yewa College, Ilaro", "address": {"@type": "PostalAddress", "addressLocality": "Ilaro", "addressRegion": "Ogun State", "addressCountry": "NG"}, "parentOrganization": {"@type": "Organization", "name": "Odu'a Investment Foundation"}}, {"@type": "WebApplication", "name": "Inflation Explainer AI", "url": "https://inflation-explainer.vercel.app/", "applicationCategory": "FinanceApplication", "operatingSystem": "Any (web browser)", "isAccessibleForFree": true, "offers": {"@type": "Offer", "price": "0", "priceCurrency": "NGN"}, "inLanguage": "en-NG", "description": "Type an item and two prices: our code works out the exact change and your family's own inflation rate, and AI explains it in 17 Nigerian languages.", "publisher": {"@id": "https://inflation-explainer.vercel.app/#org"}, "featureList": ["Exact price change, monthly change and what ₦1,000 is worth now", "Family Basket: your household's own inflation rate", "AI explanation in 17 Nigerian languages", "Price Watch board for every state (NBS)", "WhatsApp price card"]}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "What is inflation?", "acceptedAnswer": {"@type": "Answer", "text": "Inflation is when prices of goods and services rise over time, so the same money buys less."}}, {"@type": "Question", "name": "How do I calculate the percentage increase in a price?", "acceptedAnswer": {"@type": "Answer", "text": "Subtract the old price from the new price, divide by the old price, then multiply by 100. Example: (₦112,000 − ₦92,946) ÷ ₦92,946 × 100 = 20.5%."}}, {"@type": "Question", "name": "What is the difference between headline and food inflation?", "acceptedAnswer": {"@type": "Answer", "text": "Headline inflation measures the price change of everything families buy; food inflation measures only food."}}, {"@type": "Question", "name": "Why is my family's inflation different from the national rate?", "acceptedAnswer": {"@type": "Answer", "text": "The national rate is an average. If your family spends most of its money on items that rose fast, your own rate is higher. The Family Basket tool works out your own rate."}}, {"@type": "Question", "name": "Where do the inflation figures come from?", "acceptedAnswer": {"@type": "Answer", "text": "From the National Bureau of Statistics (NBS) Consumer Price Index report, published around the 15th of each month."}}]}]}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Nunito+Sans:opsz,wght@6..12,400;6..12,700;6..12,800&family=IBM+Plex+Mono:wght@500;600&display=swap">
@@ -227,6 +240,31 @@ footer small{opacity:.85}
   *{animation:none!important;transition:none!important}
   .tick-view{overflow-x:auto}
 }
+
+/* ===== v2: Family Basket, FAQ, language ===== */
+.visually-hidden{position:absolute!important;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.basket{border-top:6px solid var(--gold)}
+.bk-months{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:12px 0}
+.bk-table{display:grid;gap:8px;margin-top:6px}
+.bk-row{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr) minmax(0,1fr) 92px 40px;gap:8px;align-items:center}
+.bk-head{font:800 .78rem var(--body);color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+.bk-del{min-height:40px;border:1.5px solid var(--line);background:transparent;color:var(--muted);border-radius:10px;cursor:pointer;font-weight:800}
+.bk-del:hover{color:var(--rise);border-color:var(--rise)}
+@media (max-width:640px){
+  .bk-head{display:none}
+  .bk-row{grid-template-columns:1fr 1fr;padding:10px;border:1px solid var(--line);border-radius:14px;background:var(--surface-2)}
+  .bk-row>input[data-k="name"]{grid-column:1/-1}
+  .bk-del{grid-column:2;justify-self:end;width:44px}
+}
+.bk-result{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin:18px 0}
+.bk-big{background:var(--surface-2);border:1px solid var(--line);border-radius:16px;padding:14px 16px;display:flex;flex-direction:column;gap:2px}
+.bk-big span{font:800 .78rem var(--body);color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+.bk-big b{font:800 2.2rem var(--display)}
+.bk-big b.up{color:var(--rise)} .bk-big b.dn{color:var(--fall)}
+.bk-big small{color:var(--muted);font-weight:700}
+.faq details{border:1px solid var(--line);border-radius:14px;padding:12px 16px;margin:8px 0;background:var(--surface-2)}
+.faq summary{font-weight:800;cursor:pointer}
+.faq details p{margin:8px 0 0}
 </style>
 </head>
 <body>
@@ -239,7 +277,7 @@ footer small{opacity:.85}
   <div class="wrap">
     <a class="brand" href="#top"><span class="logo" aria-hidden="true">₦</span><span class="t">Inflation Explainer AI</span></a>
     <nav class="nav" id="nav" aria-label="Page sections">
-      <a href="#tool">Try it</a><a href="#watch">Price Watch</a><a href="#how">How it works</a><a href="#about">About</a>
+      <a href="#tool">Try it</a><a href="#basket">Family Basket</a><a href="#watch">Price Watch</a><a href="#how">How it works</a><a href="#about">About</a>
     </nav>
     <button class="iconbtn" id="theme" type="button" aria-label="Switch light or night mode">
       <svg class="moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
@@ -352,6 +390,11 @@ footer small{opacity:.85}
         <label for="q">Your question <span class="opt">(optional)</span></label>
         <textarea id="q" placeholder="e.g. Will rice get cheaper after harvest?"></textarea>
       </div>
+      <div class="field">
+        <label for="lang">Explain in</label>
+        <select id="lang"><option value="en">English</option><option value="ha">Hausa</option><option value="yo">Yoruba</option><option value="ig">Igbo</option><option value="pcm">Nigerian Pidgin</option><option value="ff">Fulfulde</option><option value="kr">Kanuri</option><option value="tiv">Tiv</option><option value="ibb">Ibibio</option><option value="efi">Efik</option><option value="ijc">Izon (Ijaw)</option><option value="bin">Edo (Bini)</option><option value="nup">Nupe</option><option value="urh">Urhobo</option><option value="igl">Igala</option><option value="idu">Idoma</option><option value="igb">Ebira</option></select>
+        <span class="hint">The maths stays the same. The AI writes the explanation in this language.</span>
+      </div>
     </div>
     <div class="actions">
       <button class="btn" id="go" type="submit">Explain</button>
@@ -366,10 +409,32 @@ footer small{opacity:.85}
   <section class="card slip" id="out" aria-live="polite">
     <div class="slip-head">
       <h2>Your answer <span class="tag">Output</span></h2>
-      <div class="actions" style="margin:0"><span class="toast" id="toast"></span><button class="btn ghost" id="copy" type="button" hidden>Copy answer</button></div>
+      <div class="actions" style="margin:0"><span class="toast" id="toast"></span><button class="btn ghost" id="copy" type="button" hidden>Copy answer</button><button class="btn ghost" id="share" type="button" hidden>📲 Share price card</button></div>
     </div>
     <textarea id="copyBox" hidden readonly aria-label="Answer text to copy"></textarea>
     <div id="result"><div class="empty"><div class="bigN">₦</div>Fill the form and press <b>Explain</b>, or press <b>Try an example</b> to see how it works.</div></div>
+  </section>
+
+
+  <section class="card basket" id="basket">
+    <h2>Family Basket: your family's own inflation <span class="tag">New</span></h2>
+    <p>Nigeria's inflation rate is an average. Your family's rate depends on what <b>you</b> buy. Type the price of each thing <b>before</b> and <b>now</b>, and how many times you buy it in a month. Our code works out your family's own rate; the AI explains it.</p>
+    <div class="bk-months">
+      <div class="field"><label for="bkOld">"Before" prices are from</label><input id="bkOld" type="month"></div>
+      <div class="field"><label for="bkNew">"Now" prices are from</label><input id="bkNew" type="month"></div>
+    </div>
+    <div class="bk-table" role="table" aria-label="Family basket">
+      <div class="bk-row bk-head" role="row"><span role="columnheader">Item</span><span role="columnheader">Price before (₦)</span><span role="columnheader">Price now (₦)</span><span role="columnheader">Times a month</span><span role="columnheader"><span class="visually-hidden">Remove</span></span></div>
+      <div id="bkRows"></div>
+    </div>
+    <div class="actions">
+      <button class="btn ghost" id="bkAdd" type="button">+ Add item</button>
+      <button class="btn" id="bkGo" type="button">Work out my family's rate</button>
+      <button class="btn ghost" id="bkClear" type="button">Clear basket</button>
+    </div>
+    <p class="hint">Saved on this phone only, so you can update it next month. Use real prices from your receipts or market. We never make up prices.</p>
+    <div class="err" id="bkErr" role="alert"></div>
+    <div id="bkOut" aria-live="polite"></div>
   </section>
 
   <div class="two">
@@ -396,10 +461,20 @@ footer small{opacity:.85}
         <li>The AI may only use the numbers we give it. It cannot make up statistics.</li>
         <li>The maths is done by code, not by the AI.</li>
         <li>Answers stay short and in simple English.</li>
-        <li>No sign-up. Nothing is saved except your light or night mode choice. No personal details go in or come out.</li>
+        <li>No sign-up. Only your light or night mode choice and your Family Basket are saved, on your own phone. No personal details go in or come out.</li>
       </ul>
     </section>
   </div>
+
+  <section class="card faq" id="faq">
+    <h2>Questions people ask</h2>
+    <details><summary>What is inflation?</summary><p>Inflation is when prices of goods and services rise over time, so the same money buys less. If rice cost ₦1,000 last year and ₦1,200 now, its price rose 20%, and your ₦1,000 now buys less rice.</p></details>
+    <details><summary>What is Nigeria's inflation rate now?</summary><p id="faqRate">Our page shows the latest headline and food inflation from the National Bureau of Statistics (NBS) at the top. NBS publishes new figures around the 15th of each month.</p></details>
+    <details><summary>What is the difference between headline and food inflation?</summary><p>Headline inflation measures the price change of everything families buy. Food inflation measures only food. In Nigeria, food is a big part of family spending, so food inflation hurts many families most.</p></details>
+    <details><summary>How do I calculate the percentage increase in a price?</summary><p>Subtract the old price from the new price, divide by the old price, then multiply by 100. Example: (₦112,000 − ₦92,946) ÷ ₦92,946 × 100 = 20.5%. Our website does this maths for you.</p></details>
+    <details><summary>Why is my family's inflation different from the national rate?</summary><p>The national rate is an average across many items and places. If your family spends most of its money on items that rose fast, like some foods or transport, your own rate is higher. Use the Family Basket to see yours.</p></details>
+    <details><summary>Can I get the explanation in Hausa, Yoruba, Igbo or Pidgin?</summary><p>Yes. Choose a language under "Explain in". The maths stays exactly the same; the AI writes the explanation in one of 17 Nigerian languages.</p></details>
+  </section>
 </main>
 
 <footer>
@@ -722,14 +797,14 @@ $("form").addEventListener("submit", async e => {
     oldPrice: oldP, newPrice: newP, oldMonth: $("oldM").value || null, newMonth: $("newM").value || null,
     months, diff: +m.diff.toFixed(2), change: +m.change.toFixed(2),
     monthly: m.monthly != null ? +m.monthly.toFixed(2) : null, yearly: m.yearly != null ? +m.yearly.toFixed(2) : null,
-    worth: +m.worth.toFixed(2), category: cat, question: question || null, deeper,
+    worth: +m.worth.toFixed(2), category: cat, question: question || null, deeper, lang: $("lang").value,
     facts: { headline: FACTS.headline, food: FACTS.food, label: FACTS.label, source: FACTS.source,
              state: st ? st.state : "", stateFood: st ? st.foodYoY : null, stateHeadline: st ? st.headlineYoY : null }
   };
   $("sent").textContent = JSON.stringify(payload, null, 2);
 
   $("go").disabled = true;
-  $("copy").hidden = true; $("copyBox").hidden = true; $("toast").textContent = "";
+  $("copy").hidden = true; $("share").hidden = true; $("copyBox").hidden = true; $("toast").textContent = "";
   $("result").innerHTML = `<div class="loading"><span class="dot"></span>Our code has done the maths. The AI is writing your explanation...</div>`;
   $("out").scrollIntoView({behavior: reduceMotion() ? "auto" : "smooth", block:"start"});
   const ai = await askAI(payload);
@@ -835,6 +910,8 @@ function render(d, m, ai, notes, st){
     "", "Built with AI by Yewa College Bytebusters (Generative AI Team)"
   ].filter((l, i, a) => l !== "" || a[i-1] !== "").join("\n");
   $("copy").hidden = false;
+  $("share").hidden = false;
+  lastCard = { d, m };
 }
 
 /* ===== 18. COPY ANSWER (with a fallback if copying is blocked) ===== */
@@ -861,6 +938,133 @@ $("reset").addEventListener("click", () => {
   $("qtyN").value = 1; $("unit").value = "kg"; $("state").value = ""; $("deep").checked = false; $("err").textContent = "";
   explained = false; renderStates(); progress(); $("item").focus();
 });
+
+
+/* ===== 20. LANGUAGE: remember the reader's choice (v2) ===== */
+try { const l = localStorage.getItem("iea-lang"); if (l) $("lang").value = l; } catch(e){}
+$("lang").addEventListener("change", () => { try { localStorage.setItem("iea-lang", $("lang").value); } catch(e){} });
+
+/* ===== 21. WHATSAPP PRICE CARD: a picture of the result to share (v2) ===== */
+let lastCard = null;
+function drawCard(d, m){
+  const W = 1080, H = 1080, cv = document.createElement("canvas"); cv.width = W; cv.height = H;
+  const g = cv.getContext("2d"), up = m.diff >= 0;
+  g.fillStyle = "#0F3D22"; g.fillRect(0, 0, W, H);
+  g.fillStyle = "rgba(233,168,15,.12)"; for (let y = 30; y < H; y += 60) for (let x = (y / 60 % 2) * 30 + 30; x < W; x += 60) { g.beginPath(); g.arc(x, y, 6, 0, Math.PI * 2); g.fill(); }
+  g.fillStyle = "#E9A80F"; g.fillRect(0, 0, W, 16);
+  const F = (w, z) => `${w} ${z}px "Bricolage Grotesque", "Nunito Sans", Arial, sans-serif`;
+  const fit = (text, w, size, maxW) => { let z = size; g.font = F(w, z); while (g.measureText(text).width > maxW && z > 24) { z -= 2; g.font = F(w, z); } return z; };
+  g.fillStyle = "#FFF8E6"; fit(d.item, "800", 76, W - 160); g.fillText(d.item, 80, 150);
+  g.fillStyle = "#E9C77A"; g.font = F("600", 36); g.fillText(`${d.quantity}${d.location !== "not given" ? " · " + d.location : ""}`, 80, 210);
+  g.fillStyle = "#FFF8E6"; fit(`${naira(d.oldPrice)}  →  ${naira(d.newPrice)}`, "700", 64, W - 160); g.fillText(`${naira(d.oldPrice)}  →  ${naira(d.newPrice)}`, 80, 340);
+  const mon = v => new Date(v + "-15T12:00:00").toLocaleDateString("en-GB", { month: "short", year: "numeric" });
+  if (d.oldMonth && d.newMonth) { g.fillStyle = "#B9D9BF"; g.font = F("600", 32); g.fillText(`${mon(d.oldMonth)} to ${mon(d.newMonth)}`, 80, 390); }
+  g.fillStyle = up ? "#FF8A57" : "#5CCB85"; g.font = F("800", 190); g.fillText(pct(m.change), 70, 600);
+  g.fillStyle = "#FFF8E6"; g.font = F("700", 44); g.fillText(up ? "price rise" : "price fall", 80, 660);
+  g.fillStyle = "rgba(255,255,255,.08)"; g.fillRect(60, 720, W - 120, 170);
+  g.fillStyle = "#E9A80F"; g.font = F("800", 46); g.fillText(`₦1,000 now buys ${naira(Math.round(m.worth))} worth`, 90, 790);
+  g.fillStyle = "#FFF8E6"; g.font = F("600", 34); g.fillText(`Nigeria ${d.category === "food" ? "food" : "headline"} inflation: ${d.category === "food" ? FACTS.food : FACTS.headline}% (${FACTS.label}, NBS)`, 90, 850);
+  g.fillStyle = "#B9D9BF"; g.font = F("600", 30); g.fillText("Check your own prices free: Inflation Explainer AI", 80, 970);
+  g.fillStyle = "#E9C77A"; g.font = F("600", 28); g.fillText("inflation-explainer.vercel.app · Built by Yewa College ByteBusters", 80, 1020);
+  return cv;
+}
+$("share").addEventListener("click", async () => {
+  if (!lastCard) return;
+  const cv = drawCard(lastCard.d, lastCard.m);
+  const name = (lastCard.d.item || "price").replace(/[^a-z0-9]+/gi, "-").toLowerCase() + "-price-card.png";
+  const blob = await new Promise(r => cv.toBlob(r, "image/png"));
+  const file = blob && new File([blob], name, { type: "image/png" });
+  try {
+    if (file && navigator.canShare && navigator.canShare({ files: [file] })) { await navigator.share({ files: [file], text: "Price check with Inflation Explainer AI: https://inflation-explainer.vercel.app" }); return; }
+  } catch(e) { if (e && e.name === "AbortError") return; }
+  const a = document.createElement("a"); a.download = name; a.href = cv.toDataURL("image/png"); a.click();
+  $("toast").textContent = "Card saved. Post it on your WhatsApp status"; setTimeout(() => $("toast").textContent = "", 3500);
+});
+
+/* ===== 22. FAMILY BASKET: your family's own inflation rate (v2) =====
+   Our CODE does all the maths. The AI only explains the numbers we give it. */
+const BK_KEY = "iea-basket";
+const BK_START = [["Rice", 4], ["Garri", 4], ["Beans", 2], ["Bread", 8], ["Cooking oil", 2], ["Transport (one trip)", 20], ["Data bundle", 1], ["Cooking gas refill", 1]];
+function bkLoad(){ try { return JSON.parse(localStorage.getItem(BK_KEY) || "null"); } catch(e){ return null; } }
+function bkSave(){ try { localStorage.setItem(BK_KEY, JSON.stringify(bkRead())); } catch(e){} }
+function bkRowHTML(r, i){
+  return `<div class="bk-row" role="row">
+    <input role="cell" aria-label="Item ${i+1}" data-k="name" value="${esc(r.name || "")}" maxlength="40" placeholder="e.g. Yam">
+    <div class="naira" role="cell"><span>₦</span><input aria-label="Price before" data-k="before" inputmode="decimal" value="${r.before ? Number(r.before).toLocaleString("en-NG") : ""}" placeholder="before"></div>
+    <div class="naira" role="cell"><span>₦</span><input aria-label="Price now" data-k="now" inputmode="decimal" value="${r.now ? Number(r.now).toLocaleString("en-NG") : ""}" placeholder="now"></div>
+    <input role="cell" aria-label="Times a month" data-k="qty" type="number" min="0" step="any" value="${r.qty ?? 1}">
+    <button type="button" class="bk-del" role="cell" aria-label="Remove ${esc(r.name || "item")}">✕</button></div>`;
+}
+function bkDraw(rows){ $("bkRows").innerHTML = rows.map(bkRowHTML).join(""); }
+function bkRead(){
+  return { old: $("bkOld").value, now: $("bkNew").value, rows: [...document.querySelectorAll("#bkRows .bk-row")].map(row => {
+    const v = k => row.querySelector(`[data-k="${k}"]`).value;
+    const b = parseNaira(v("before")), n = parseNaira(v("now"));
+    return { name: privacyFilter(v("name").trim()).slice(0, 40), before: Number.isNaN(b) || b == null ? null : b, now: Number.isNaN(n) || n == null ? null : n, qty: Number(v("qty")) || 0 };
+  }) };
+}
+function bkMaths(state){
+  const items = state.rows.filter(r => r.name && r.before > 0 && r.now > 0 && r.qty > 0);
+  if (items.length < 2) return null;
+  const before = items.reduce((a, r) => a + r.before * r.qty, 0), now = items.reduce((a, r) => a + r.now * r.qty, 0);
+  const rise = now - before, change = rise / before * 100;
+  const months = monthsBetween(state.old, state.now);
+  const yearly = months ? (Math.pow(now / before, 12 / months) - 1) * 100 : null;
+  const list = items.map(r => ({ name: r.name, qty: r.qty, before: r.before, now: r.now, change: +((r.now - r.before) / r.before * 100).toFixed(1),
+    share: rise !== 0 ? +(((r.now - r.before) * r.qty) / rise * 100).toFixed(1) : 0, extra: (r.now - r.before) * r.qty }))
+    .sort((a, b) => b.extra - a.extra);
+  return { items: list, before, now, rise, change, months, yearly };
+}
+function bkDemo(k){
+  const top = k.items.slice(0, 2);
+  return { headline: `Your family's basket went ${k.rise >= 0 ? "up" : "down"} from ${naira(Math.round(k.before))} to ${naira(Math.round(k.now))} a month (${pct(k.change)}).`,
+    explain: `This is your family's own inflation rate for these items. ${k.yearly != null ? `At this pace it would be about ${k.yearly.toFixed(1)}% in a year, compared with Nigeria's headline rate of ${FACTS.headline}% (${FACTS.label}).` : "Add both months to compare with Nigeria's yearly rate."}`,
+    drivers: top.map(t => `${t.name} added ${naira(Math.round(t.extra))} a month (${t.share}% of the rise).`),
+    tips: ["Buy your biggest items in bulk with neighbours and share the cost.", "Compare two or three markets for the item that rose most.", "Plan trips so one journey covers several errands."], source: "demo" };
+}
+async function bkExplain(k){
+  const ctrl = new AbortController(); const timer = setTimeout(() => ctrl.abort(), 25000);
+  try {
+    const r = await fetch("/api/explain", { method: "POST", headers: { "Content-Type": "application/json" }, signal: ctrl.signal,
+      body: JSON.stringify({ mode: "basket", lang: $("lang").value, items: k.items.map(i => ({ name: i.name, qty: i.qty, before: i.before, now: i.now, change: i.change, share: i.share })),
+        basket: { before: Math.round(k.before), now: Math.round(k.now), change: +k.change.toFixed(2), months: k.months, yearly: k.yearly != null ? +k.yearly.toFixed(2) : null },
+        facts: { headline: FACTS.headline, food: FACTS.food, label: FACTS.label } }) });
+    const j = await r.json(); if (!r.ok || !j.headline) throw new Error();
+    return { ...j, source: "ai" };
+  } catch(e) { return bkDemo(k); } finally { clearTimeout(timer); }
+}
+async function bkRun(){
+  $("bkErr").textContent = ""; bkSave();
+  const k = bkMaths(bkRead());
+  if (!k) { $("bkErr").textContent = "Fill both prices and how many times a month for at least two items."; return; }
+  const up = k.rise >= 0, max = Math.max(...k.items.map(i => Math.abs(i.share)), 1);
+  $("bkOut").innerHTML = `<div class="bk-result">
+      <div class="bk-big"><span>Your family's rate</span><b class="${up ? "up" : "dn"}">${pct(k.change)}</b><small>${naira(Math.round(k.before))} → ${naira(Math.round(k.now))} a month · ${up ? "+" : "−"}${naira(Math.abs(Math.round(k.rise)))}</small></div>
+      <div class="bk-big"><span>Nigeria (${esc(FACTS.label)})</span><b>${FACTS.headline}%</b><small>headline · food ${FACTS.food}%</small></div>
+      <div class="bk-big"><span>Yearly pace</span><b>${k.yearly != null ? k.yearly.toFixed(1) + "%" : "—"}</b><small>${k.months ? `over ${k.months} month${k.months > 1 ? "s" : ""}` : "add both months"}</small></div>
+    </div>
+    <h3>What pushed your basket up</h3>
+    <div class="bars">${k.items.map(i => `<div class="brow"><span>${esc(i.name)}</span><div class="track"><div class="fill" style="width:${Math.max(3, Math.abs(i.share) / max * 100)}%;background:${i.extra < 0 ? "var(--fall)" : "var(--rise)"}"></div></div><b>${i.share}%</b></div>`).join("")}</div>
+    <div class="loading" id="bkAI"><span class="dot"></span>The AI is explaining your basket...</div>`;
+  const ai = await bkExplain(k);
+  $("bkAI").outerHTML = `<div class="sec wide" style="margin-top:14px"><span class="who ${ai.source === "demo" ? "demo" : ""}">${ai.source === "demo" ? "Offline answer · connect the AI server for live answers" : "AI answer"}</span>
+    <p class="ai-head">${esc(ai.headline)}</p><p>${esc(ai.explain)}</p>
+    <ul class="clean">${(ai.drivers || []).map(x => `<li>${esc(x)}</li>`).join("")}</ul>
+    <h3 style="margin-top:12px">Smart ways to cope</h3><ul class="clean">${(ai.tips || []).map(x => `<li>${esc(x)}</li>`).join("")}</ul></div>`;
+}
+(function bkStart(){
+  const saved = bkLoad();
+  bkDraw(saved && saved.rows && saved.rows.length ? saved.rows : BK_START.map(([name, qty]) => ({ name, qty })));
+  if (saved) { $("bkOld").value = saved.old || ""; $("bkNew").value = saved.now || ""; }
+  $("bkAdd").addEventListener("click", () => { const st = bkRead(); st.rows.push({ name: "", qty: 1 }); bkDraw(st.rows); $("bkRows").lastElementChild.querySelector("input").focus(); });
+  $("bkRows").addEventListener("click", e => { const b = e.target.closest(".bk-del"); if (!b) return; b.closest(".bk-row").remove(); bkSave(); });
+  $("bkRows").addEventListener("change", bkSave);
+  $("bkGo").addEventListener("click", bkRun);
+  $("bkClear").addEventListener("click", () => { try { localStorage.removeItem(BK_KEY); } catch(e){} bkDraw(BK_START.map(([name, qty]) => ({ name, qty }))); $("bkOld").value = $("bkNew").value = ""; $("bkOut").innerHTML = ""; });
+})();
+
+/* FAQ: show the latest NBS figures in the answer */
+$("faqRate").textContent = `In ${FACTS.label}, Nigeria's headline inflation was ${FACTS.headline}% and food inflation was ${FACTS.food}% year-on-year (${FACTS.source}). NBS publishes new figures around the 15th of each month, and this page is updated after each release.`;
 
 /* ===== START ===== */
 buildTicker();

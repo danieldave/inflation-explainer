@@ -1,0 +1,13 @@
+# Inflation Explainer AI
+
+> Inflation Explainer AI is a free web app built by students of the ByteBusters Coding Club, Yewa College, Ilaro (Odu'a Investment Foundation), Nigeria. A user types an item with its old and new price; the website's code calculates the exact change, the monthly change and what ₦1,000 is worth now, and an AI explains the likely causes and coping tips in simple English or one of 16 other Nigerian languages.
+
+Key facts:
+- The maths is always done by code, never by the AI. The AI may only use the numbers given to it.
+- National and state figures come from the National Bureau of Statistics (NBS) CPI report, updated monthly around the 15th. The page never makes up prices.
+- Family Basket: a household enters its own monthly items and prices to get its own inflation rate and the items that pushed it up most.
+- Price Watch board: year-on-year food and headline inflation by state, with "awaiting NBS update" where no figure exists.
+- Learning tool, not financial advice.
+
+## Page
+- [Inflation Explainer AI](https://inflation-explainer.vercel.app/): price check, Family Basket, Price Watch, how it works, FAQ
