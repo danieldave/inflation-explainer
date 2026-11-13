@@ -265,6 +265,7 @@ footer small{opacity:.85}
 .faq details{border:1px solid var(--line);border-radius:14px;padding:12px 16px;margin:8px 0;background:var(--surface-2)}
 .faq summary{font-weight:800;cursor:pointer}
 .faq details p{margin:8px 0 0}
+.libLinks{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}.libLinks a{padding:7px 13px;border-radius:999px;border:1px solid var(--line);background:var(--surface-2);text-decoration:none;font-weight:700;color:var(--green)}
 </style>
 </head>
 <body>
@@ -277,7 +278,7 @@ footer small{opacity:.85}
   <div class="wrap">
     <a class="brand" href="#top"><span class="logo" aria-hidden="true">₦</span><span class="t">Inflation Explainer AI</span></a>
     <nav class="nav" id="nav" aria-label="Page sections">
-      <a href="#tool">Try it</a><a href="#basket">Family Basket</a><a href="#watch">Price Watch</a><a href="#how">How it works</a><a href="#about">About</a>
+      <a href="#tool">Try it</a><a href="/prices/">Why prices rise</a><a href="/learn/">Money words</a><a href="#basket">Family Basket</a><a href="#watch">Price Watch</a><a href="#how">How it works</a><a href="#about">About</a>
     </nav>
     <button class="iconbtn" id="theme" type="button" aria-label="Switch light or night mode">
       <svg class="moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
@@ -465,6 +466,13 @@ footer small{opacity:.85}
       </ul>
     </section>
   </div>
+
+  <section class="card" id="library">
+    <h2>Why prices rise: the Price Library <span class="tag">New</span></h2>
+    <p>Plain-English pages on why each thing costs more, and what a family can do about it.</p>
+    <p class="libLinks"><a href="/prices/rice/">Rice</a><a href="/prices/garri/">Garri</a><a href="/prices/bread/">Bread</a><a href="/prices/tomatoes/">Tomatoes</a><a href="/prices/eggs/">Eggs</a><a href="/prices/petrol/">Petrol</a><a href="/prices/cooking-gas/">Cooking gas</a><a href="/prices/transport-fare/">Transport</a><a href="/prices/data/">Data</a><a href="/prices/school-fees/">School fees</a><a href="/prices/">All items →</a></p>
+    <p class="libLinks"><a href="/learn/what-is-inflation/">What is inflation?</a><a href="/learn/what-causes-inflation/">What causes it in Nigeria?</a><a href="/learn/what-is-shrinkflation/">Shrinkflation</a><a href="/learn/why-prices-rarely-fall/">Why prices rarely fall</a><a href="/learn/">All money words →</a></p>
+  </section>
 
   <section class="card faq" id="faq">
     <h2>Questions people ask</h2>
@@ -1071,6 +1079,8 @@ buildTicker();
 fillExample();   // open with a real example filled in, so visitors see how it works
 renderStates();
 progress();
+/* A Price Library page can send the item name: /?item=Rice#tool */
+try { const sent = new URLSearchParams(location.search).get("item"); if (sent) $("item").value = sent.replace(/[<>]/g, "").slice(0, 40); } catch (e) {}
 </script>
 </body>
 </html>

@@ -2,6 +2,8 @@
 
 Built with AI by Yewa College Bytebusters (Generative AI Team).
 
+**New in version 3: the Price Library.** `tools/library.js` holds 42 everyday items and 16 money words. `node tools/build.js` turns them into real pages: "Why is the price of ___ going up in Nigeria?" (`/prices/`) and "What is inflation?" style pages (`/learn/`). Every item page has the reasons, one fact, a small calculator, family tips and a link to the crop's season on Harvest Calendar Naija. We explain reasons and never print prices or dates, so pages stay true. To add a page: add an entry, run the build, then `node tools/test.js`. Search Console codes go in `tools/site.json`.
+
 ## New in version 3
 
 | Upgrade | What it does |

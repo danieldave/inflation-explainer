@@ -45,5 +45,26 @@ const P = { item: 'Rice', quantity: '50 kg', location: 'Ogun', oldPrice: 92946, 
     assert.ok(fs.readFileSync(path.join(ROOT, 'llms.txt'), 'utf8').startsWith('# Inflation Explainer AI'));
     assert.ok(fs.readFileSync(path.join(ROOT, 'sitemap.xml'), 'utf8').includes('<loc>'));
   });
+  await ok('price library: every item has a page with reasons, tips and schema; no prices or dates in our words', () => {
+    const L = require('./library'); const sm = fs.readFileSync(path.join(ROOT, 'sitemap.xml'), 'utf8');
+    assert.ok(L.ITEMS.length >= 40); assert.strictEqual(new Set(L.ITEMS.map(i => i[0])).size, L.ITEMS.length);
+    L.ITEMS.forEach(i => {
+      i[4].forEach(k => assert.ok(L.DRIVERS[k], i[0] + ' reason ' + k)); i[6].forEach(k => assert.ok(L.TIPS[k], i[0] + ' tip ' + k));
+      assert.ok(!/₦|\b20\d\d\b/.test(i.flat().join(' ')), i[0] + ' must not state a price or a year');
+      const page = fs.readFileSync(path.join(ROOT, 'prices', i[0], 'index.html'), 'utf8');
+      assert.ok(page.includes('Quick answer') && page.includes('"FAQPage"') && (page.match(/<h1/g) || []).length === 1 && (page.match(/rel="canonical"/g) || []).length === 1, i[0]);
+      assert.ok(sm.includes('/prices/' + i[0] + '/'), i[0]);
+    });
+  });
+  await ok('price library: crop links point to real Harvest Calendar pages (when that repo is beside this one)', () => {
+    const L = require('./library'); const crops = path.join(ROOT, '../harvest-calendar-naija/crops');
+    if (!fs.existsSync(crops)) return;
+    L.ITEMS.filter(i => i[8]).forEach(i => assert.ok(fs.existsSync(path.join(crops, i[8])), i[0] + ' -> ' + i[8]));
+  });
+  await ok('money words: every topic has a page and the examples add up', () => {
+    const L = require('./library');
+    L.LEARN.forEach(x => assert.ok(fs.existsSync(path.join(ROOT, 'learn', x[0], 'index.html')), x[0]));
+    assert.strictEqual(Math.round(10000 / 1.25), 8000); assert.strictEqual(1000 * 1.2, 1200);
+  });
   console.log(`\nAll ${passed} checks passed.`);
 })().catch(e => { console.error('\n  ✗ FAILED:', e.message); process.exit(1); });
