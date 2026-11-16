@@ -7,6 +7,7 @@
    The secret keys live in Vercel > Project > Settings > Environment Variables:
      OPENAI_API_KEY        required for the AI helper
      OPENAI_MODEL          optional (default gpt-4o-mini)
+     DAILY_AI_LIMIT        optional: most AI calls per day for the whole site (default 2000)
      ALLOWED_ORIGINS       optional: extra sites allowed to call the API, comma-separated
    A key is NEVER written in any file of this project.
    ===================================================================== */
@@ -37,7 +38,7 @@ function allowed(ip, limit) {
   return list.length <= limit;
 }
 function visitor(req) {
-  return String(req.headers['x-forwarded-for'] || req.socket?.remoteAddress || 'unknown').split(',')[0].trim();
+  return String(req.headers['x-real-ip'] || req.headers['x-forwarded-for'] || req.socket?.remoteAddress || 'unknown').split(',')[0].trim();
 }
 
 // ---------- 3. Save answers: the same question twice costs only once ----------
@@ -61,7 +62,7 @@ function allowOrigin(req, res) {
   const origin = req.headers.origin || '';
   const extra = (process.env.ALLOWED_ORIGINS || '').split(',').map(s => s.trim()).filter(Boolean);
   const host = req.headers.host || '';
-  const ok = !origin || origin === 'https://' + host || /^https:\/\/[a-z0-9-]+\.vercel\.app$/.test(origin) ||
+  const ok = !origin || origin === 'https://' + host || /^https:\/\/inflation-explainer[a-z0-9-]*\.vercel\.app$/.test(origin) ||
     extra.includes(origin) || /^http:\/\/localhost(:\d+)?$/.test(origin);
   if (origin && ok) res.setHeader('Access-Control-Allow-Origin', origin);
   res.setHeader('Vary', 'Origin');
@@ -71,9 +72,32 @@ function allowOrigin(req, res) {
   return ok;
 }
 
+// ---------- 4b. The daily fuse: the most AI calls the whole site may make in one day ----------
+// If someone attacks the site, the fuse blows and the AI rests until tomorrow, so the
+// bill can never run away. Change the number with DAILY_AI_LIMIT in the settings.
+// With the Upstash database connected, every copy of the server counts together.
+let fuse = { day: '', n: 0 };
+async function fuseOK() {
+  const max = Number(process.env.DAILY_AI_LIMIT) || 2000;
+  const day = new Date().toISOString().slice(0, 10);
+  if (fuse.day !== day) fuse = { day, n: 0 };
+  if (++fuse.n > max) return false;
+  const url = (process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL || '').replace(/\/$/, '');
+  const token = process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN || '';
+  if (!url || !token) return true;
+  const ctrl = new AbortController(); const timer = setTimeout(() => ctrl.abort(), 2000);
+  try {
+    const r = await fetch(url + '/pipeline', { method: 'POST', signal: ctrl.signal, headers: { Authorization: 'Bearer ' + token, 'Content-Type': 'application/json' },
+      body: JSON.stringify([['INCR', 'fuse:' + day], ['EXPIRE', 'fuse:' + day, 172800]]) });
+    const rows = await r.json();
+    return !(Number(rows && rows[0] && rows[0].result) > max);
+  } catch (e) { return true; }                       // if the counter is unreachable, this copy's own count still protects us
+  finally { clearTimeout(timer); }
+}
+
 // A small "front door" every API file uses: checks method, origin, size and limits.
 async function frontDoor(req, res, { limit }) {
-  if (!allowOrigin(req, res)) { res.status(403).json({ error: 'This website is not allowed to use the Harvest Calendar helper.' }); return null; }
+  if (!allowOrigin(req, res)) { res.status(403).json({ error: 'This website is not allowed to use the Inflation Explainer helper.' }); return null; }
   if (req.method === 'OPTIONS') { res.status(204).end(); return null; }
   if (req.method !== 'POST') { res.status(405).json({ error: 'Send a POST request.' }); return null; }
   if (!process.env.OPENAI_API_KEY) { res.status(503).json({ error: 'The AI helper is not switched on yet.', offline: true }); return null; }
@@ -85,6 +109,7 @@ async function frontDoor(req, res, { limit }) {
 
 // ---------- 5. Talk to OpenAI and always get JSON back ----------
 async function askOpenAI(system, user, maxTokens, model) {
+  if (!(await fuseOK())) throw new Error('daily AI limit reached');
   const ctrl = new AbortController();
   const timer = setTimeout(() => ctrl.abort(), 25000);                 // give up after 25 seconds
   try {
