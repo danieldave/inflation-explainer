@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en-NG">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>My Price Story: work out your own inflation</title>
+<meta name="description" content="Type what you paid for up to five things before and what you pay now. See your own inflation rate, what your money has lost, and a card you can share.">
+<link rel="canonical" href="https://inflation-explainer.vercel.app/my-prices/">
+<meta name="google-site-verification" content="gRx6rQOAdy83jB7Xta6qp0gE61CorO4qy7RzTVvn-WY">
+<meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Inflation Explainer AI">
+<meta property="og:title" content="My Price Story: work out your own inflation">
+<meta property="og:description" content="Type what you paid for up to five things before and what you pay now. See your own inflation rate, what your money has lost, and a card you can share.">
+<meta property="og:url" content="https://inflation-explainer.vercel.app/my-prices/">
+<meta property="og:image" content="https://inflation-explainer.vercel.app/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#0F3D22">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230F3D22'/%3E%3Ctext x='32' y='45' font-size='38' text-anchor='middle' fill='%23E9A80F' font-family='Arial' font-weight='700'%3E%E2%82%A6%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Nunito+Sans:opsz,wght@6..12,400;6..12,700;6..12,800&display=swap">
+<link rel="stylesheet" href="/guide.css">
+<script>try { var t = localStorage.getItem("iea-theme"); if (t === "dark" || t === "light") document.documentElement.setAttribute("data-theme", t); } catch (e) {}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"EducationalOrganization","@id":"https://inflation-explainer.vercel.app/#org","name":"ByteBusters Generative AI Team","url":"https://inflation-explainer.vercel.app/"},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://inflation-explainer.vercel.app/"},{"@type":"ListItem","position":2,"name":"My Price Story","item":"https://inflation-explainer.vercel.app/my-prices/"}]},{"@type":"WebApplication","name":"My Price Story: personal inflation calculator","applicationCategory":"FinanceApplication","operatingSystem":"Any","isAccessibleForFree":true}]}</script>
+</head>
+<body>
+<header class="bar"><a class="brand" href="/"><span class="logo" aria-hidden="true">₦</span><span>Inflation Explainer AI</span></a></header>
+<nav class="gnav" aria-label="Main"><a href="/prices/">Why prices rise</a><a href="/learn/">Money words</a><a href="/#tool">Explain my price</a><a href="/#basket">Family Basket</a></nav>
+<main class="guide">
+  <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> › My Price Story</nav>
+  <h1>My Price Story: your own inflation</h1>
+
+  <p class="answer-box"><b>What this does:</b> the news gives one inflation number for all of Nigeria. Your own number depends on what <b>you</b> buy. Type up to five things, the price you remember from before and the price now. Nothing you type leaves your phone.</p>
+  <div class="mp">
+    <label class="mp-when">The "before" prices are from about <select id="mpYears"><option value="1">1 year ago</option><option value="2">2 years ago</option><option value="3">3 years ago</option><option value="5">5 years ago</option></select></label>
+    <div class="mp-head"><span>Thing I buy</span><span>Price before (₦)</span><span>Price now (₦)</span></div>
+    <div id="mpRows"></div>
+    <p><button class="btn" type="button" id="mpGo">Show my price story</button> <button class="btn ghost" type="button" id="mpFill">Try an example</button></p>
+    <p id="mpErr" class="mp-err" role="alert"></p>
+    <div id="mpOut" class="mp-out" hidden aria-live="polite"></div>
+  </div>
+  <p class="note">This is simple arithmetic on the prices you typed, not an official figure. The official rate comes from the National Bureau of Statistics each month.</p>
+  <style>.mp{max-width:720px}.mp-when{display:block;font-weight:700;margin:14px 0}.mp select,.mp input{font:inherit;padding:10px 12px;border-radius:10px;border:1.5px solid #d8cfc0;background:#fff;color:#222;width:100%;min-width:0}.mp-when select{width:auto}
+  .mp-head,.mp-row{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:8px;margin-bottom:8px}.mp-head{font-weight:700;font-size:14px}.mp-err{color:#b3261e;font-weight:700;min-height:22px}
+  .mp-out{border-radius:20px;padding:20px;background:linear-gradient(135deg,#1f3a2e,#2f6b4f);color:#fff;margin-top:8px}.mp-out h2{color:#ffd166;margin:0 0 6px;font-size:clamp(26px,6vw,40px)}.mp-out p{margin:6px 0}.mp-out table{width:100%;border-collapse:collapse;margin:12px 0;font-size:15px}.mp-out td,.mp-out th{padding:6px 4px;border-bottom:1px solid rgba(255,255,255,.2);text-align:left}.mp-out td:last-child,.mp-out th:last-child{text-align:right}
+  .mp-bar{height:14px;border-radius:8px;background:rgba(255,255,255,.2);overflow:hidden;margin:4px 0 10px}.mp-bar i{display:block;height:100%;background:#ffd166}
+  @media(max-width:520px){.mp-head{display:none}.mp-row{grid-template-columns:1fr 1fr}.mp-row input:first-child{grid-column:1/-1}}</style>
+  <script>
+  (function () {
+    var rows = document.getElementById("mpRows"), out = document.getElementById("mpOut"), err = document.getElementById("mpErr");
+    var esc = function (s) { return String(s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); };
+    var naira = function (n) { return "₦" + Math.round(n).toLocaleString("en-NG"); };
+    var hint = ["e.g. bag of rice", "e.g. bread", "e.g. transport to school", "e.g. data bundle", "e.g. a crate of eggs"];
+    rows.innerHTML = hint.map(function (h) { return '<div class="mp-row"><input maxlength="30" placeholder="' + h + '" aria-label="Thing I buy"><input type="number" min="1" inputmode="numeric" placeholder="before" aria-label="Price before"><input type="number" min="1" inputmode="numeric" placeholder="now" aria-label="Price now"></div>'; }).join("");
+    document.getElementById("mpFill").onclick = function () { var ex = [["Bread", 700, 1500], ["Transport to school", 200, 500], ["Data bundle", 1000, 1500]];
+      rows.querySelectorAll(".mp-row").forEach(function (r, i) { var f = r.querySelectorAll("input"), e = ex[i] || ["", "", ""]; f[0].value = e[0]; f[1].value = e[1]; f[2].value = e[2]; }); document.getElementById("mpYears").value = "2"; };
+    document.getElementById("mpGo").onclick = function () {
+      var items = []; err.textContent = "";
+      rows.querySelectorAll(".mp-row").forEach(function (r) { var f = r.querySelectorAll("input"), a = Number(f[1].value), b = Number(f[2].value); if (a > 0 && b > 0) items.push({ n: f[0].value.trim() || "Item " + (items.length + 1), a: a, b: b }); });
+      if (!items.length) { err.textContent = "Type at least one thing with a price before and a price now."; out.hidden = true; return; }
+      var years = Number(document.getElementById("mpYears").value), before = 0, now = 0;
+      items.forEach(function (i) { before += i.a; now += i.b; });
+      var total = (now / before - 1) * 100, perYear = (Math.pow(now / before, 1 / years) - 1) * 100, worth = 1000 * before / now;
+      var word = total >= 0 ? "up" : "down", top = items.slice().sort(function (x, y) { return y.b / y.a - x.b / x.a; })[0];
+      out.hidden = false;
+      out.innerHTML = "<p>My prices went " + word + " by</p><h2>" + Math.abs(total).toFixed(0) + "% in " + years + " year" + (years > 1 ? "s" : "") + "</h2>" +
+        (years > 1 ? "<p>That is about <b>" + Math.abs(perYear).toFixed(0) + "% every year</b>.</p>" : "") +
+        "<p>₦1,000 from back then buys what <b>" + naira(worth) + "</b> buys today.</p><div class='mp-bar'><i style='width:" + Math.max(3, Math.min(100, worth / 10)) + "%'></i></div>" +
+        "<table><tr><th>Thing</th><th>Before</th><th>Now</th><th>Change</th></tr>" + items.map(function (i) { var c = (i.b / i.a - 1) * 100; return "<tr><td>" + esc(i.n) + "</td><td>" + naira(i.a) + "</td><td>" + naira(i.b) + "</td><td>" + (c >= 0 ? "+" : "") + c.toFixed(0) + "%</td></tr>"; }).join("") + "</table>" +
+        (items.length > 1 ? "<p>Biggest rise: <b>" + esc(top.n) + "</b>.</p>" : "") +
+        '<p><button class="btn" type="button" id="mpShare">📣 Share my price story</button> <a class="btn ghost" href="/?item=' + encodeURIComponent(top.n) + '">Why did ' + esc(top.n) + ' go up? →</a></p><p id="mpNote"></p>';
+      var text = "My prices went " + word + " " + Math.abs(total).toFixed(0) + "% in " + years + " year" + (years > 1 ? "s" : "") + ". ₦1,000 from then buys what " + naira(worth) + " buys now. Work out yours: " + location.origin + "/my-prices/";
+      document.getElementById("mpShare").onclick = function () { if (navigator.share) navigator.share({ text: text }).catch(function () {}); else if (navigator.clipboard) navigator.clipboard.writeText(text).then(function () { document.getElementById("mpNote").textContent = "Copied. Paste it in WhatsApp."; }); };
+      out.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    };
+  })();
+  </script>
+  <p class="updated">Written by the ByteBusters Generative AI Team. Last updated <time datetime="2026-11-16">2026-11-16</time>. We explain reasons, not today's prices: prices differ by town and change every week. For official figures see the National Bureau of Statistics.</p>
+</main>
+<footer><p><a href="/prices/">Why prices rise</a> · <a href="/learn/">Money words</a> · <a href="/">Explain my own price</a> · <a href="https://harvest-calendar-naija.vercel.app/">Harvest Calendar Naija</a></p><p>Built with AI by the ByteBusters Generative AI Team · ByteBusters National Showcase 2026</p></footer>
+</body>
+</html>

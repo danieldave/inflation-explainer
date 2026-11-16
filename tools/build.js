@@ -156,6 +156,61 @@ write('learn/index.html', page({
 }));
 pages.push({ loc: '/learn/', pri: '0.9' });
 
+// ---------- /my-prices/ : My Price Story ----------
+write('my-prices/index.html', page({
+  rel: 'my-prices/index.html', title: 'My Price Story: work out your own inflation',
+  description: 'Type what you paid for up to five things before and what you pay now. See your own inflation rate, what your money has lost, and a card you can share.',
+  h1: 'My Price Story: your own inflation', crumbs: [['Home', '/'], ['My Price Story', '/my-prices/']],
+  body: `
+  <p class="answer-box"><b>What this does:</b> the news gives one inflation number for all of Nigeria. Your own number depends on what <b>you</b> buy. Type up to five things, the price you remember from before and the price now. Nothing you type leaves your phone.</p>
+  <div class="mp">
+    <label class="mp-when">The "before" prices are from about <select id="mpYears"><option value="1">1 year ago</option><option value="2">2 years ago</option><option value="3">3 years ago</option><option value="5">5 years ago</option></select></label>
+    <div class="mp-head"><span>Thing I buy</span><span>Price before (₦)</span><span>Price now (₦)</span></div>
+    <div id="mpRows"></div>
+    <p><button class="btn" type="button" id="mpGo">Show my price story</button> <button class="btn ghost" type="button" id="mpFill">Try an example</button></p>
+    <p id="mpErr" class="mp-err" role="alert"></p>
+    <div id="mpOut" class="mp-out" hidden aria-live="polite"></div>
+  </div>
+  <p class="note">This is simple arithmetic on the prices you typed, not an official figure. The official rate comes from the National Bureau of Statistics each month.</p>
+  <style>.mp{max-width:720px}.mp-when{display:block;font-weight:700;margin:14px 0}.mp select,.mp input{font:inherit;padding:10px 12px;border-radius:10px;border:1.5px solid #d8cfc0;background:#fff;color:#222;width:100%;min-width:0}.mp-when select{width:auto}
+  .mp-head,.mp-row{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:8px;margin-bottom:8px}.mp-head{font-weight:700;font-size:14px}.mp-err{color:#b3261e;font-weight:700;min-height:22px}
+  .mp-out{border-radius:20px;padding:20px;background:linear-gradient(135deg,#1f3a2e,#2f6b4f);color:#fff;margin-top:8px}.mp-out h2{color:#ffd166;margin:0 0 6px;font-size:clamp(26px,6vw,40px)}.mp-out p{margin:6px 0}.mp-out table{width:100%;border-collapse:collapse;margin:12px 0;font-size:15px}.mp-out td,.mp-out th{padding:6px 4px;border-bottom:1px solid rgba(255,255,255,.2);text-align:left}.mp-out td:last-child,.mp-out th:last-child{text-align:right}
+  .mp-bar{height:14px;border-radius:8px;background:rgba(255,255,255,.2);overflow:hidden;margin:4px 0 10px}.mp-bar i{display:block;height:100%;background:#ffd166}
+  @media(max-width:520px){.mp-head{display:none}.mp-row{grid-template-columns:1fr 1fr}.mp-row input:first-child{grid-column:1/-1}}</style>
+  <script>
+  (function () {
+    var rows = document.getElementById("mpRows"), out = document.getElementById("mpOut"), err = document.getElementById("mpErr");
+    var esc = function (s) { return String(s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); };
+    var naira = function (n) { return "₦" + Math.round(n).toLocaleString("en-NG"); };
+    var hint = ["e.g. bag of rice", "e.g. bread", "e.g. transport to school", "e.g. data bundle", "e.g. a crate of eggs"];
+    rows.innerHTML = hint.map(function (h) { return '<div class="mp-row"><input maxlength="30" placeholder="' + h + '" aria-label="Thing I buy"><input type="number" min="1" inputmode="numeric" placeholder="before" aria-label="Price before"><input type="number" min="1" inputmode="numeric" placeholder="now" aria-label="Price now"></div>'; }).join("");
+    document.getElementById("mpFill").onclick = function () { var ex = [["Bread", 700, 1500], ["Transport to school", 200, 500], ["Data bundle", 1000, 1500]];
+      rows.querySelectorAll(".mp-row").forEach(function (r, i) { var f = r.querySelectorAll("input"), e = ex[i] || ["", "", ""]; f[0].value = e[0]; f[1].value = e[1]; f[2].value = e[2]; }); document.getElementById("mpYears").value = "2"; };
+    document.getElementById("mpGo").onclick = function () {
+      var items = []; err.textContent = "";
+      rows.querySelectorAll(".mp-row").forEach(function (r) { var f = r.querySelectorAll("input"), a = Number(f[1].value), b = Number(f[2].value); if (a > 0 && b > 0) items.push({ n: f[0].value.trim() || "Item " + (items.length + 1), a: a, b: b }); });
+      if (!items.length) { err.textContent = "Type at least one thing with a price before and a price now."; out.hidden = true; return; }
+      var years = Number(document.getElementById("mpYears").value), before = 0, now = 0;
+      items.forEach(function (i) { before += i.a; now += i.b; });
+      var total = (now / before - 1) * 100, perYear = (Math.pow(now / before, 1 / years) - 1) * 100, worth = 1000 * before / now;
+      var word = total >= 0 ? "up" : "down", top = items.slice().sort(function (x, y) { return y.b / y.a - x.b / x.a; })[0];
+      out.hidden = false;
+      out.innerHTML = "<p>My prices went " + word + " by</p><h2>" + Math.abs(total).toFixed(0) + "% in " + years + " year" + (years > 1 ? "s" : "") + "</h2>" +
+        (years > 1 ? "<p>That is about <b>" + Math.abs(perYear).toFixed(0) + "% every year</b>.</p>" : "") +
+        "<p>₦1,000 from back then buys what <b>" + naira(worth) + "</b> buys today.</p><div class='mp-bar'><i style='width:" + Math.max(3, Math.min(100, worth / 10)) + "%'></i></div>" +
+        "<table><tr><th>Thing</th><th>Before</th><th>Now</th><th>Change</th></tr>" + items.map(function (i) { var c = (i.b / i.a - 1) * 100; return "<tr><td>" + esc(i.n) + "</td><td>" + naira(i.a) + "</td><td>" + naira(i.b) + "</td><td>" + (c >= 0 ? "+" : "") + c.toFixed(0) + "%</td></tr>"; }).join("") + "</table>" +
+        (items.length > 1 ? "<p>Biggest rise: <b>" + esc(top.n) + "</b>.</p>" : "") +
+        '<p><button class="btn" type="button" id="mpShare">📣 Share my price story</button> <a class="btn ghost" href="/?item=' + encodeURIComponent(top.n) + '">Why did ' + esc(top.n) + ' go up? →</a></p><p id="mpNote"></p>';
+      var text = "My prices went " + word + " " + Math.abs(total).toFixed(0) + "% in " + years + " year" + (years > 1 ? "s" : "") + ". ₦1,000 from then buys what " + naira(worth) + " buys now. Work out yours: " + location.origin + "/my-prices/";
+      document.getElementById("mpShare").onclick = function () { if (navigator.share) navigator.share({ text: text }).catch(function () {}); else if (navigator.clipboard) navigator.clipboard.writeText(text).then(function () { document.getElementById("mpNote").textContent = "Copied. Paste it in WhatsApp."; }); };
+      out.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    };
+  })();
+  </script>`,
+  schema: [{ '@type': 'WebApplication', name: 'My Price Story: personal inflation calculator', applicationCategory: 'FinanceApplication', operatingSystem: 'Any', isAccessibleForFree: true }]
+}));
+pages.push({ loc: '/my-prices/', pri: '0.8' });
+
 // ---------- sitemap.xml, llms.txt, verification codes ----------
 write('sitemap.xml', `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${pages.map(p => `  <url><loc>${URL_}${p.loc}</loc><lastmod>${TODAY}</lastmod><priority>${p.pri}</priority></url>`).join('\n')}\n</urlset>\n`);
 const llms = fs.readFileSync(path.join(ROOT, 'llms.txt'), 'utf8').split('\n## Why prices rise')[0].trimEnd();

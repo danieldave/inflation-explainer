@@ -50,3 +50,6 @@ Never type a number you did not get from NBS or your own survey.
 ## Night mode
 Follows the phone or computer setting on the first visit. The sun/moon button switches it, and the
 choice is remembered on that device (the only thing the site saves).
+
+## My Price Story (`/my-prices/`)
+The visitor types up to five things they buy, with the price before and the price now. The page works out their own inflation, the yearly rate, and what ₦1,000 from then buys today, and gives a share button. It is plain arithmetic in the browser: nothing is sent or saved, and no AI is used.
