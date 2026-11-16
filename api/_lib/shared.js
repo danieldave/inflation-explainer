@@ -110,27 +110,40 @@ async function frontDoor(req, res, { limit }) {
 // ---------- 5. Talk to OpenAI and always get JSON back ----------
 async function askOpenAI(system, user, maxTokens, model) {
   if (!(await fuseOK())) throw Object.assign(new Error('daily AI limit reached'), { code: 'daily-limit' });
-  const ctrl = new AbortController();
-  const timer = setTimeout(() => ctrl.abort(), 25000);                 // give up after 25 seconds
-  try {
-    const r = await fetch('https://api.openai.com/v1/chat/completions', {
-      method: 'POST',
-      signal: ctrl.signal,
-      headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + process.env.OPENAI_API_KEY },
-      body: JSON.stringify({
-        model: model || MODEL,
-        temperature: 0.2,
-        max_tokens: maxTokens,
-        response_format: { type: 'json_object' },
-        messages: [{ role: 'system', content: system }, { role: 'user', content: user }]
-      })
-    });
-    if (!r.ok) throw Object.assign(new Error('OpenAI said ' + r.status), { code: 'ai-' + r.status });   // 401 = key problem, 429 = no credit or too busy
-    const data = await r.json();
-    return JSON.parse(data.choices[0].message.content);
-  } finally {
-    clearTimeout(timer);
+  const messages = [{ role: 'system', content: system }, { role: 'user', content: user }];
+  const base = { model: model || MODEL, response_format: { type: 'json_object' }, messages };
+  // Older models want "max_tokens" and accept "temperature". Newer models want
+  // "max_completion_tokens" and refuse a custom temperature. We try the classic way first;
+  // if OpenAI says 400 (bad request), we try the newer way once, with more room to think.
+  const styles = [
+    { ...base, temperature: 0.2, max_tokens: maxTokens },
+    { ...base, max_completion_tokens: maxTokens * 3 }
+  ];
+  let lastStatus = 0, lastWhy = '';
+  for (const body of styles) {
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), 25000);               // give up after 25 seconds
+    try {
+      const r = await fetch('https://api.openai.com/v1/chat/completions', {
+        method: 'POST', signal: ctrl.signal,
+        headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + process.env.OPENAI_API_KEY },
+        body: JSON.stringify(body)
+      });
+      if (r.status === 400) {                                           // wrong shape for this model: remember why, try the other shape
+        lastStatus = 400;
+        try { const e = await r.json(); lastWhy = String((e.error && e.error.message) || '').slice(0, 200); } catch (e) { /* no details */ }
+        continue;
+      }
+      if (!r.ok) throw Object.assign(new Error('OpenAI said ' + r.status), { code: 'ai-' + r.status });   // 401 = key problem, 429 = no credit or too busy
+      const data = await r.json();
+      const text = data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content;
+      if (!text) throw Object.assign(new Error('OpenAI sent an empty answer'), { code: 'ai-empty' });
+      try { return JSON.parse(text); } catch (e) { throw Object.assign(new Error('OpenAI did not send JSON'), { code: 'ai-notjson' }); }
+    } finally {
+      clearTimeout(timer);
+    }
   }
+  throw Object.assign(new Error('OpenAI said ' + lastStatus + ': ' + lastWhy), { code: 'ai-400', detail: lastWhy });
 }
 
 // ---------- 6. The languages we speak ----------
