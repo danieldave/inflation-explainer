@@ -11,6 +11,10 @@ Key facts:
 
 ## Page
 - [Inflation Explainer AI](https://inflation-explainer.vercel.app/): price check, Family Basket, Price Watch, how it works, FAQ
+- [My Price Story](https://inflation-explainer.vercel.app/my-prices/): work out your own inflation
+- [Inflation questions and answers](https://inflation-explainer.vercel.app/faq/): 12 short answers for Nigeria
+- [About / who built this](https://inflation-explainer.vercel.app/about/): made by ByteBusters students at Yewa College, Ilaro (Odu'a Investment Foundation)
+- [Full text for AI assistants](https://inflation-explainer.vercel.app/llms-full.txt)
 
 ## Why prices rise (one page per item; reasons, not prices)
 - [Why is the price of rice going up in Nigeria?](https://inflation-explainer.vercel.app/prices/rice/): Rice costs more mainly because of transport and farming costs for local rice, the exchange rate and import rules for foreign rice, and losses from floods and insecurity in rice-growing areas.

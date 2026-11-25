@@ -28,7 +28,10 @@ const article = (h, d, loc) => ({ '@type': 'Article', headline: h, description: 
 
 function page({ rel, title, description, h1, crumbs, body, schema }) {
   const url = URL_ + '/' + rel.replace(/index\.html$/, '');
-  if (title.length > 68) title = title.replace(/ \| Inflation Explainer$/, '');
+  description = short(description);
+  // Google shows about 60 letters of a title
+  if (title.length > 60) title = title.replace(/ \| Inflation Explainer$/, '');
+  for (let n = 58; title.length > 60 && n > 30; n -= 4) title = title.replace(/…$/, '').slice(0, n).replace(/\s\S*$/, '') + '…';
   return `<!doctype html>
 <html lang="en-NG">
 <head>
@@ -45,6 +48,9 @@ function page({ rel, title, description, h1, crumbs, body, schema }) {
 <meta property="og:url" content="${url}">
 <meta property="og:image" content="${URL_}/og-image.png">
 <meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="${esc(title)}">
+<meta name="twitter:description" content="${esc(description)}">
+<meta name="twitter:image" content="${URL_}/og-image.png">
 <meta name="theme-color" content="#0F3D22">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230F3D22'/%3E%3Ctext x='32' y='45' font-size='38' text-anchor='middle' fill='%23E9A80F' font-family='Arial' font-weight='700'%3E%E2%82%A6%3C/text%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -63,7 +69,7 @@ function page({ rel, title, description, h1, crumbs, body, schema }) {
 ${body}
   <p class="updated">Written by the ${esc(SITE.publisher)}. Last updated <time datetime="${TODAY}">${TODAY}</time>. We explain reasons, not today's prices: prices differ by town and change every week. For official figures see the National Bureau of Statistics.</p>
 </main>
-<footer><p><a href="/prices/">Why prices rise</a> · <a href="/learn/">Money words</a> · <a href="/">Explain my own price</a> · <a href="${SITE.harvest}/">Harvest Calendar Naija</a></p><p>Built with AI by the ${esc(SITE.publisher)} · ByteBusters National Showcase 2026</p></footer>
+<footer><p><a href="/prices/">Why prices rise</a> · <a href="/learn/">Money words</a> · <a href="/">Explain my own price</a> · <a href="/faq/">FAQ</a> · <a href="/about/">About / who built this</a> · <a href="${SITE.harvest}/">Harvest Calendar Naija</a></p><p>Built with AI by the ${esc(SITE.publisher)} · ByteBusters National Showcase 2026</p></footer>
 </body>
 </html>
 `;
@@ -211,6 +217,67 @@ write('my-prices/index.html', page({
 }));
 pages.push({ loc: '/my-prices/', pri: '0.8' });
 
+// ---------- /faq/ : what people in Nigeria ask about rising prices (AEO) ----------
+const LQ = id => L.LEARN.find(x => x[0] === id), IT = id => L.ITEMS.find(x => x[0] === id);
+const learnQA = id => [LQ(id)[1], LQ(id)[2], `/learn/${id}/`];
+const SITE_FAQ = [
+  learnQA('what-is-inflation'),
+  learnQA('what-causes-inflation'),
+  ['What is Nigeria\'s inflation rate now?', 'The National Bureau of Statistics (NBS) publishes Nigeria\'s official headline and food inflation rates every month in its Consumer Price Index (CPI) report, usually around the 15th. Our home page shows the latest NBS figures; we never make up a rate.', '/learn/who-measures-inflation/'],
+  ['Why is food so expensive in Nigeria?', LQ('what-is-food-inflation')[2] + ' Food prices go up when transport and fuel cost more, harvests are hit by weather or insecurity, and imported inputs cost more because of the exchange rate.', '/learn/what-is-food-inflation/'],
+  ['Why is the price of rice going up in Nigeria?', IT('rice')[3], '/prices/rice/'],
+  learnQA('what-is-the-exchange-rate'),
+  ['How do I calculate how much a price has gone up?', 'Take the new price, subtract the old price, divide by the old price and multiply by 100. For example, if something went from ₦1,000 to ₦1,500, it went up by 500 ÷ 1,000 × 100 = 50%. Our price checker does this maths for you.', '/'],
+  learnQA('what-is-shrinkflation'),
+  learnQA('saving-and-inflation'),
+  learnQA('how-to-budget-in-inflation'),
+  learnQA('who-measures-inflation'),
+  ['Is Inflation Explainer AI financial advice? Who built it?', 'No, it is a free learning tool, not financial advice. It was built by students of the ByteBusters coding club at Yewa College, Ilaro, Ogun State, a programme of Odu\'a Investment Foundation.', '/about/']
+];
+write('faq/index.html', page({
+  rel: 'faq/index.html', title: 'Inflation questions and answers for Nigeria | Inflation Explainer',
+  description: 'Simple answers about rising prices in Nigeria: what inflation is, what causes it, why food and rice cost more, the exchange rate and saving.',
+  h1: 'Inflation questions and answers', crumbs: [['Home', '/'], ['FAQ', '/faq/']],
+  body: `
+  <p class="answer-box"><b>Quick answer:</b> inflation means prices of most things rise over time, so the same naira buys less. In Nigeria the main drivers are fuel and transport costs, the exchange rate, food supply problems and more money chasing the same goods.</p>
+  ${SITE_FAQ.map(([q, a, href]) => `<h2>${esc(q)}</h2>\n  <p>${esc(a)} <a href="${href}">Read more</a></p>`).join('\n  ')}
+  ${cta('')}`,
+  schema: [faqSchema(SITE_FAQ)]
+}));
+pages.push({ loc: '/faq/', pri: '0.8' });
+
+// ---------- /about/ : who built this ----------
+write('about/index.html', page({
+  rel: 'about/index.html', title: 'About Inflation Explainer AI and who built it',
+  description: "Inflation Explainer AI was built by students of the ByteBusters coding club at Yewa College, Ilaro, Ogun State, a programme of Odu'a Investment Foundation.",
+  h1: 'About Inflation Explainer AI: who built this', crumbs: [['Home', '/'], ['About', '/about/']],
+  body: `
+  <p class="answer-box"><b>In short:</b> a free website that explains why prices rise in Nigeria, made by secondary school students in the ByteBusters coding club at Yewa College, Ilaro, Ogun State. ByteBusters is run by Odu'a Investment Foundation.</p>
+  <h2>Why we built it</h2>
+  <p>Our families talk about rising prices every week: rice, garri, transport, data, school fees. We wanted a simple tool that shows exactly how much a price has changed and explains the likely reasons in plain words and in Nigerian languages.</p>
+  <h2>Who built it</h2>
+  <p>A team of students at the Yewa College ByteBusters centre, the Generative AI Team, planned the app, wrote the explanations and coded the website, with guidance from the ByteBusters Centre Lead. We learned HTML, CSS, JavaScript, how to make code do the maths so the AI never invents numbers, how to put a website online with Vercel, and how search engines read pages.</p>
+  <h2>What it is, and is not</h2>
+  <ul>
+    <li>It is a free learning tool. The maths is done by code; the AI only explains.</li>
+    <li>It is <b>not</b> financial advice, and it does not show today's market prices. Official figures come from the National Bureau of Statistics (NBS).</li>
+  </ul>
+  <p>Read the <a href="/faq/">questions and answers</a> or go back to the <a href="/">price checker</a>.</p>
+  ${cta('')}`,
+  schema: [{ '@type': 'AboutPage', name: 'About Inflation Explainer AI', url: URL_ + '/about/', publisher: { '@id': URL_ + '/#org' } }]
+}));
+pages.push({ loc: '/about/', pri: '0.5' });
+
+// ---------- 404.html : friendly "page not found" (not in the sitemap) ----------
+write('404.html', page({
+  rel: '404.html', title: 'Page not found | Inflation Explainer',
+  description: 'This page could not be found. Check a price, read why prices rise, or learn the money words.',
+  h1: 'Sorry, we could not find that page', crumbs: [['Home', '/'], ['Page not found', '/404.html']],
+  body: `
+  <p>The link may be old or mistyped. Try one of these:</p>
+  <ul><li><a href="/">Explain my price</a></li><li><a href="/prices/">Why prices rise</a></li><li><a href="/learn/">Money words</a></li><li><a href="/faq/">FAQ</a></li></ul>`
+}).replace('<meta name="robots" content="index, follow', '<meta name="robots" content="noindex, follow').replace(/\n<link rel="canonical"[^>]*>/, ''));
+
 // ---------- sitemap.xml, llms.txt, verification codes ----------
 write('sitemap.xml', `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${pages.map(p => `  <url><loc>${URL_}${p.loc}</loc><lastmod>${TODAY}</lastmod><priority>${p.pri}</priority></url>`).join('\n')}\n</urlset>\n`);
 const llms = fs.readFileSync(path.join(ROOT, 'llms.txt'), 'utf8').split('\n## Why prices rise')[0].trimEnd();
@@ -218,4 +285,13 @@ write('llms.txt', llms + `\n\n## Why prices rise (one page per item; reasons, no
 let index = fs.readFileSync(path.join(ROOT, 'index.html'), 'utf8').replace(/\n<meta name="(google-site-verification|msvalidate\.01)"[^>]*>/g, '');
 if (VERIFY) index = index.replace(/(<link rel="canonical"[^>]*>)/, '$1' + VERIFY);
 fs.writeFileSync(path.join(ROOT, 'index.html'), index);
+// ---------- llms-full.txt (GEO): the summary plus every answer in full ----------
+write('llms-full.txt', fs.readFileSync(path.join(ROOT, 'llms.txt'), 'utf8') + `
+## About
+Inflation Explainer AI was built by students of the ByteBusters coding club at Yewa College, Ilaro, Ogun State, Nigeria, with guidance from the ByteBusters Centre Lead. ByteBusters is a programme of Odu'a Investment Foundation. Free; a learning tool, not financial advice. About page: ${URL_}/about/
+
+## Questions and answers (also at ${URL_}/faq/)
+${SITE_FAQ.map(([q, a]) => `### ${q}\n${a}\n`).join('\n')}
+## Money words in full
+${L.LEARN.map(x => `### ${x[1]}\n${x[2]}\nGuide: ${URL_}/learn/${x[0]}/\n`).join('\n')}`);
 console.log('Done:', pages.length, 'pages in the sitemap.');
