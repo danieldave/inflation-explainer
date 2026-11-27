@@ -62,14 +62,14 @@ function page({ rel, title, description, h1, crumbs, body, schema }) {
 </head>
 <body>
 <header class="bar"><a class="brand" href="/"><span class="logo" aria-hidden="true">₦</span><span>Inflation Explainer AI</span></a></header>
-<nav class="gnav" aria-label="Main"><a href="/prices/">Why prices rise</a><a href="/learn/">Money words</a><a href="/#tool">Explain my price</a><a href="/#basket">Family Basket</a></nav>
+<nav class="gnav" aria-label="Main"><a href="/prices/">Why prices rise</a><a href="/learn/">Money words</a><a href="/#tool">Explain my price</a><a href="/price-diary/">My Price Diary</a><a href="/#basket">Family Basket</a></nav>
 <main class="guide">
   <nav class="crumbs" aria-label="Breadcrumb">${crumbs.map((c, i) => i < crumbs.length - 1 ? `<a href="${c[1]}">${esc(c[0])}</a> › ` : esc(c[0])).join('')}</nav>
   <h1>${esc(h1)}</h1>
 ${body}
   <p class="updated">Written by the ${esc(SITE.publisher)}. Last updated <time datetime="${TODAY}">${TODAY}</time>. We explain reasons, not today's prices: prices differ by town and change every week. For official figures see the National Bureau of Statistics.</p>
 </main>
-<footer><p><a href="/prices/">Why prices rise</a> · <a href="/learn/">Money words</a> · <a href="/">Explain my own price</a> · <a href="/faq/">FAQ</a> · <a href="/about/">About / who built this</a> · <a href="${SITE.harvest}/">Harvest Calendar Naija</a></p><p>Built with AI by the ${esc(SITE.publisher)} · ByteBusters National Showcase 2026</p></footer>
+<footer><p><a href="/prices/">Why prices rise</a> · <a href="/learn/">Money words</a> · <a href="/">Explain my own price</a> · <a href="/price-diary/">My Price Diary</a> · <a href="/faq/">FAQ</a> · <a href="/about/">About / who built this</a> · <a href="/whats-new/">What's new</a> · <a href="${SITE.harvest}/">Harvest Calendar Naija</a></p><p>Built with AI by the ${esc(SITE.publisher)} · ByteBusters National Showcase 2026</p></footer>
 </body>
 </html>
 `;
@@ -217,6 +217,75 @@ write('my-prices/index.html', page({
 }));
 pages.push({ loc: '/my-prices/', pri: '0.8' });
 
+// ---------- /price-diary/ : My own inflation this month, share card, price diary (v4) ----------
+const PD_FAQ = [
+  ['How do I work out my own inflation for this month?', 'List the things you buy, how many of each you buy in a month, and the price last month and this month. Multiply each price by how many you buy, add them up for each month, then take (this month − last month) ÷ last month × 100. My Price Diary does this maths for you on your phone.'],
+  ['Why is my own inflation different from the NBS figure?', 'NBS measures the average price change of many items across Nigeria, usually compared with the same month last year. Your number uses only the things you buy, your own prices, and one month of change, so it can be higher or lower.'],
+  ['Is my price diary private?', 'Yes. Your prices are saved only on your phone. Nothing is sent to us unless you press "Explain with AI", which sends only the item names and numbers. You can download your diary as a CSV file.']
+];
+write('price-diary/index.html', page({
+  rel: 'price-diary/index.html', title: 'My Price Diary: track prices and your own inflation',
+  description: 'Work out your own inflation this month from what you buy, see your biggest price movers, keep a market price diary with charts, and share a card.',
+  h1: 'My Price Diary: your own inflation this month', crumbs: [['Home', '/'], ['My Price Diary', '/price-diary/']],
+  body: `
+  <p class="answer-box"><b>What this does:</b> type the things you buy, how many a month, and the price <b>last month</b> and <b>this month</b>. Our code works out your own inflation, shows the biggest movers and explains it in plain English. Keep a price diary every market day to see a line for each item. Everything stays <b>on this phone</b>. <a href="#pd-help">How it works</a></p>
+  <datalist id="pdItems">${L.ITEMS.map(i => `<option value="${esc(cap(i[1].replace(/ \(.*\)$/, '')))}">`).join('')}</datalist>
+  <section class="pd-card" id="my-inflation" aria-labelledby="pd-h-mine">
+    <h2 id="pd-h-mine">1. My own inflation: <span data-last-month></span> → <span data-this-month></span></h2>
+    <div class="pd-table-wrap" role="table" aria-label="My basket">
+      <div class="pd-row pd-head" role="row"><span role="columnheader">Item (and size)</span><span role="columnheader">How many a month</span><span role="columnheader">Last month (₦)</span><span role="columnheader">This month (₦)</span><span role="columnheader"><span class="visually-hidden">Remove</span></span></div>
+      <div id="pdRows"></div>
+    </div>
+    <div class="cta"><button class="btn ghost" type="button" id="pdAdd">+ Add item</button><button class="btn ghost" type="button" id="pdFromDiary">📒 Fill from my diary</button><button class="btn ghost" type="button" id="pdExample">Try an example</button><button class="btn ghost" type="button" id="pdClear">Clear</button></div>
+    <p><button class="btn" type="button" id="pdGo">Work out my inflation</button></p>
+    <p class="pd-err" id="pdErr" role="alert"></p>
+    <div id="pdOut" aria-live="polite"></div>
+  </section>
+  <section class="pd-card" id="diary" aria-labelledby="pd-h-diary">
+    <h2 id="pd-h-diary">2. My price diary</h2>
+    <p>Each market day, save the price of a few things you always buy. Use the same size every time (for example "1 mudu" or "50kg bag") so the line is fair.</p>
+    <form id="pdDiaryForm" class="pd-form" novalidate>
+      <label>Item<input id="pdItem" list="pdItems" maxlength="40" placeholder="e.g. Rice" required></label>
+      <label>Size or unit <small>(optional)</small><input id="pdUnit" maxlength="30" placeholder="e.g. 1 mudu"></label>
+      <label>Price (₦)<input id="pdPrice" inputmode="decimal" placeholder="e.g. 2,000" required></label>
+      <label>Date<input id="pdDate" type="date" required></label>
+      <label>Market or shop <small>(optional)</small><input id="pdPlace" maxlength="40" placeholder="e.g. Ilaro market"></label>
+      <button class="btn" type="submit">💾 Save price</button>
+    </form>
+    <p class="pd-note" id="pdDiaryMsg" aria-live="polite"></p>
+    <p class="pd-sub" id="pdDiaryCount"></p>
+    <div id="pdDiaryList" class="pd-items"></div>
+    <div class="cta"><button class="btn ghost" type="button" id="pdCsv">⬇️ Download CSV</button><label class="btn ghost pd-file">📥 Load CSV<input type="file" id="pdImport" accept=".csv,text/csv"></label><button class="btn ghost" type="button" id="pdDiaryClear">🧹 Delete diary</button></div>
+  </section>
+  <p class="pd-toast" id="pdToast" role="status" aria-live="polite"></p>
+  <h2 id="pd-help">How it works</h2>
+  ${PD_FAQ.map(([q, a]) => `<details><summary>${esc(q)}</summary><p>${esc(a)}</p></details>`).join('\n  ')}
+  <p class="note">This is simple arithmetic on prices <b>you</b> typed, not an official figure. Official rates come from the National Bureau of Statistics (NBS); see the latest on our <a href="/">home page</a>.</p>
+  <div class="cta"><a class="btn ghost" href="/#basket">Family Basket (compare any two months)</a><a class="btn ghost" href="/my-prices/">My Price Story (years ago vs now)</a></div>
+  <script src="/price-diary.js" defer></script>`,
+  schema: [{ '@type': 'WebApplication', name: 'My Price Diary: personal monthly inflation calculator', url: URL_ + '/price-diary/', applicationCategory: 'FinanceApplication', operatingSystem: 'Any', isAccessibleForFree: true, offers: { '@type': 'Offer', price: '0', priceCurrency: 'NGN' }, creator: { '@type': 'Organization', name: 'ByteBusters team at Yewa College, Ilaro' } }, faqSchema(PD_FAQ)]
+}));
+pages.push({ loc: '/price-diary/', pri: '0.8' });
+
+// ---------- /whats-new/ ----------
+write('whats-new/index.html', page({
+  rel: 'whats-new/index.html', title: "What's new in Inflation Explainer AI",
+  description: 'New: work out your own inflation this month, keep a market price diary with charts and a CSV download, and share a card of your basket.',
+  h1: "What's new in Inflation Explainer AI", crumbs: [['Home', '/'], ["What's new", '/whats-new/']],
+  body: `
+  <p class="answer-box"><b>Version 4 (November 2026):</b> three new tools, added by <b>the ByteBusters team at Yewa College</b>, Ilaro, Ogun State. They work on a basic phone, need no account, and keep your prices on your own phone.</p>
+  <h2>📊 My own inflation this month</h2>
+  <p>Type what you buy, how many a month, and last month's and this month's price. Our code works out your own inflation, shows your <b>biggest movers</b> and explains the result in plain English. It can fill itself from your price diary. If you like, the AI can explain it in one of 17 Nigerian languages (only item names and numbers are sent).</p>
+  <h2>📒 Price diary</h2>
+  <p>Save market prices over time. Each item gets its own small line chart (tap a dot to see the date and price) and a table. Download everything as a <b>CSV</b> file for Excel, Google Sheets or a class project, and load it again on another phone.</p>
+  <h2>📣 Share card</h2>
+  <p>One tap makes a picture that says "My basket went up X% this month" with your top movers, ready for your WhatsApp status, plus a ready-made WhatsApp message.</p>
+  <p class="note"><b>Your data:</b> all of it stays in your phone's browser storage. We never see your prices, and we never make up prices: every number comes from you.</p>
+  <div class="cta"><a class="btn" href="/price-diary/">Open My Price Diary</a><a class="btn ghost" href="/">Explain one price</a></div>`,
+  schema: [{ '@type': 'WebPage', name: "What's new in Inflation Explainer AI", url: URL_ + '/whats-new/', datePublished: '2026-11-27', dateModified: TODAY, publisher: { '@id': URL_ + '/#org' }, creator: { '@type': 'Organization', name: 'ByteBusters team at Yewa College, Ilaro' } }]
+}));
+pages.push({ loc: '/whats-new/', pri: '0.5' });
+
 // ---------- /faq/ : what people in Nigeria ask about rising prices (AEO) ----------
 const LQ = id => L.LEARN.find(x => x[0] === id), IT = id => L.ITEMS.find(x => x[0] === id);
 const learnQA = id => [LQ(id)[1], LQ(id)[2], `/learn/${id}/`];
@@ -231,6 +300,7 @@ const SITE_FAQ = [
   learnQA('what-is-shrinkflation'),
   learnQA('saving-and-inflation'),
   learnQA('how-to-budget-in-inflation'),
+  [PD_FAQ[0][0], PD_FAQ[0][1], '/price-diary/'],
   learnQA('who-measures-inflation'),
   ['Is Inflation Explainer AI financial advice? Who built it?', 'No, it is a free learning tool, not financial advice. It was built by students of the ByteBusters coding club at Yewa College, Ilaro, Ogun State, a programme of Odu\'a Investment Foundation.', '/about/']
 ];

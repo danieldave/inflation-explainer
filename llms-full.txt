@@ -6,12 +6,15 @@ Key facts:
 - The maths is always done by code, never by the AI. The AI may only use the numbers given to it.
 - National and state figures come from the National Bureau of Statistics (NBS) CPI report, updated monthly around the 15th. The page never makes up prices.
 - Family Basket: a household enters its own monthly items and prices to get its own inflation rate and the items that pushed it up most.
+- My Price Diary: a user enters item, quantity, last month's and this month's price to get their own one-month inflation, biggest movers and a plain-English explanation written by code; a price diary keeps market prices over time with a line chart per item and CSV export; a share card says "my basket went up X% this month". All saved on the user's phone.
 - Price Watch board: year-on-year food and headline inflation by state, with "awaiting NBS update" where no figure exists.
 - Learning tool, not financial advice.
 
 ## Page
 - [Inflation Explainer AI](https://inflation-explainer.vercel.app/): price check, Family Basket, Price Watch, how it works, FAQ
 - [My Price Story](https://inflation-explainer.vercel.app/my-prices/): work out your own inflation
+- [My Price Diary](https://inflation-explainer.vercel.app/price-diary/): your own inflation this month, price diary with charts, share card
+- [What's new](https://inflation-explainer.vercel.app/whats-new/): version 4 features added by the ByteBusters team at Yewa College
 - [Inflation questions and answers](https://inflation-explainer.vercel.app/faq/): 12 short answers for Nigeria
 - [About / who built this](https://inflation-explainer.vercel.app/about/): made by ByteBusters students at Yewa College, Ilaro (Odu'a Investment Foundation)
 - [Full text for AI assistants](https://inflation-explainer.vercel.app/llms-full.txt)
@@ -111,6 +114,9 @@ Yes. Money kept in a box or in an account that pays less interest than inflation
 
 ### How can a family budget when prices keep rising?
 List what you spend, put needs before wants, buy in season and in bulk, and review the list every month because prices change.
+
+### How do I work out my own inflation for this month?
+List the things you buy, how many of each you buy in a month, and the price last month and this month. Multiply each price by how many you buy, add them up for each month, then take (this month − last month) ÷ last month × 100. My Price Diary does this maths for you on your phone.
 
 ### Who measures inflation in Nigeria?
 The National Bureau of Statistics (NBS) measures inflation. It collects thousands of prices across all states each month and publishes the Consumer Price Index.

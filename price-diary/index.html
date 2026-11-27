@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en-NG">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>My Price Diary: track prices and your own inflation</title>
+<meta name="description" content="Work out your own inflation this month from what you buy, see your biggest price movers, keep a market price diary with charts, and share a card.">
+<link rel="canonical" href="https://inflation-explainer.vercel.app/price-diary/">
+<meta name="google-site-verification" content="gRx6rQOAdy83jB7Xta6qp0gE61CorO4qy7RzTVvn-WY">
+<meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Inflation Explainer AI">
+<meta property="og:title" content="My Price Diary: track prices and your own inflation">
+<meta property="og:description" content="Work out your own inflation this month from what you buy, see your biggest price movers, keep a market price diary with charts, and share a card.">
+<meta property="og:url" content="https://inflation-explainer.vercel.app/price-diary/">
+<meta property="og:image" content="https://inflation-explainer.vercel.app/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="My Price Diary: track prices and your own inflation">
+<meta name="twitter:description" content="Work out your own inflation this month from what you buy, see your biggest price movers, keep a market price diary with charts, and share a card.">
+<meta name="twitter:image" content="https://inflation-explainer.vercel.app/og-image.png">
+<meta name="theme-color" content="#0F3D22">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230F3D22'/%3E%3Ctext x='32' y='45' font-size='38' text-anchor='middle' fill='%23E9A80F' font-family='Arial' font-weight='700'%3E%E2%82%A6%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Nunito+Sans:opsz,wght@6..12,400;6..12,700;6..12,800&display=swap">
+<link rel="stylesheet" href="/guide.css">
+<script>try { var t = localStorage.getItem("iea-theme"); if (t === "dark" || t === "light") document.documentElement.setAttribute("data-theme", t); } catch (e) {}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"EducationalOrganization","@id":"https://inflation-explainer.vercel.app/#org","name":"ByteBusters Generative AI Team","url":"https://inflation-explainer.vercel.app/"},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://inflation-explainer.vercel.app/"},{"@type":"ListItem","position":2,"name":"My Price Diary","item":"https://inflation-explainer.vercel.app/price-diary/"}]},{"@type":"WebApplication","name":"My Price Diary: personal monthly inflation calculator","url":"https://inflation-explainer.vercel.app/price-diary/","applicationCategory":"FinanceApplication","operatingSystem":"Any","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"NGN"},"creator":{"@type":"Organization","name":"ByteBusters team at Yewa College, Ilaro"}},{"@type":"FAQPage","mainEntity":[{"@type":"Question","name":"How do I work out my own inflation for this month?","acceptedAnswer":{"@type":"Answer","text":"List the things you buy, how many of each you buy in a month, and the price last month and this month. Multiply each price by how many you buy, add them up for each month, then take (this month − last month) ÷ last month × 100. My Price Diary does this maths for you on your phone."}},{"@type":"Question","name":"Why is my own inflation different from the NBS figure?","acceptedAnswer":{"@type":"Answer","text":"NBS measures the average price change of many items across Nigeria, usually compared with the same month last year. Your number uses only the things you buy, your own prices, and one month of change, so it can be higher or lower."}},{"@type":"Question","name":"Is my price diary private?","acceptedAnswer":{"@type":"Answer","text":"Yes. Your prices are saved only on your phone. Nothing is sent to us unless you press \"Explain with AI\", which sends only the item names and numbers. You can download your diary as a CSV file."}}]}]}</script>
+</head>
+<body>
+<header class="bar"><a class="brand" href="/"><span class="logo" aria-hidden="true">₦</span><span>Inflation Explainer AI</span></a></header>
+<nav class="gnav" aria-label="Main"><a href="/prices/">Why prices rise</a><a href="/learn/">Money words</a><a href="/#tool">Explain my price</a><a href="/price-diary/">My Price Diary</a><a href="/#basket">Family Basket</a></nav>
+<main class="guide">
+  <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> › My Price Diary</nav>
+  <h1>My Price Diary: your own inflation this month</h1>
+
+  <p class="answer-box"><b>What this does:</b> type the things you buy, how many a month, and the price <b>last month</b> and <b>this month</b>. Our code works out your own inflation, shows the biggest movers and explains it in plain English. Keep a price diary every market day to see a line for each item. Everything stays <b>on this phone</b>. <a href="#pd-help">How it works</a></p>
+  <datalist id="pdItems"><option value="Rice"><option value="Garri"><option value="Beans"><option value="Bread"><option value="Tomatoes"><option value="Pepper"><option value="Onions"><option value="Yam"><option value="Plantain"><option value="Maize"><option value="Palm oil"><option value="Vegetable (groundnut) oil"><option value="Eggs"><option value="Chicken"><option value="Beef"><option value="Fish"><option value="Sugar"><option value="Milk"><option value="Instant noodles"><option value="Wheat flour"><option value="Groundnuts"><option value="Sachet (pure) water"><option value="Petrol"><option value="Diesel"><option value="Cooking gas"><option value="Kerosene"><option value="Charcoal and firewood"><option value="Transport fares"><option value="Electricity"><option value="Data bundles and airtime"><option value="School fees"><option value="House rent"><option value="Cement"><option value="Medicines"><option value="Soap and detergent"><option value="Sanitary pads"><option value="Clothes and shoes"><option value="Phones and laptops"><option value="Books and stationery"><option value="Fertiliser"><option value="Animal and poultry feed"><option value="Cassava"></datalist>
+  <section class="pd-card" id="my-inflation" aria-labelledby="pd-h-mine">
+    <h2 id="pd-h-mine">1. My own inflation: <span data-last-month></span> → <span data-this-month></span></h2>
+    <div class="pd-table-wrap" role="table" aria-label="My basket">
+      <div class="pd-row pd-head" role="row"><span role="columnheader">Item (and size)</span><span role="columnheader">How many a month</span><span role="columnheader">Last month (₦)</span><span role="columnheader">This month (₦)</span><span role="columnheader"><span class="visually-hidden">Remove</span></span></div>
+      <div id="pdRows"></div>
+    </div>
+    <div class="cta"><button class="btn ghost" type="button" id="pdAdd">+ Add item</button><button class="btn ghost" type="button" id="pdFromDiary">📒 Fill from my diary</button><button class="btn ghost" type="button" id="pdExample">Try an example</button><button class="btn ghost" type="button" id="pdClear">Clear</button></div>
+    <p><button class="btn" type="button" id="pdGo">Work out my inflation</button></p>
+    <p class="pd-err" id="pdErr" role="alert"></p>
+    <div id="pdOut" aria-live="polite"></div>
+  </section>
+  <section class="pd-card" id="diary" aria-labelledby="pd-h-diary">
+    <h2 id="pd-h-diary">2. My price diary</h2>
+    <p>Each market day, save the price of a few things you always buy. Use the same size every time (for example "1 mudu" or "50kg bag") so the line is fair.</p>
+    <form id="pdDiaryForm" class="pd-form" novalidate>
+      <label>Item<input id="pdItem" list="pdItems" maxlength="40" placeholder="e.g. Rice" required></label>
+      <label>Size or unit <small>(optional)</small><input id="pdUnit" maxlength="30" placeholder="e.g. 1 mudu"></label>
+      <label>Price (₦)<input id="pdPrice" inputmode="decimal" placeholder="e.g. 2,000" required></label>
+      <label>Date<input id="pdDate" type="date" required></label>
+      <label>Market or shop <small>(optional)</small><input id="pdPlace" maxlength="40" placeholder="e.g. Ilaro market"></label>
+      <button class="btn" type="submit">💾 Save price</button>
+    </form>
+    <p class="pd-note" id="pdDiaryMsg" aria-live="polite"></p>
+    <p class="pd-sub" id="pdDiaryCount"></p>
+    <div id="pdDiaryList" class="pd-items"></div>
+    <div class="cta"><button class="btn ghost" type="button" id="pdCsv">⬇️ Download CSV</button><label class="btn ghost pd-file">📥 Load CSV<input type="file" id="pdImport" accept=".csv,text/csv"></label><button class="btn ghost" type="button" id="pdDiaryClear">🧹 Delete diary</button></div>
+  </section>
+  <p class="pd-toast" id="pdToast" role="status" aria-live="polite"></p>
+  <h2 id="pd-help">How it works</h2>
+  <details><summary>How do I work out my own inflation for this month?</summary><p>List the things you buy, how many of each you buy in a month, and the price last month and this month. Multiply each price by how many you buy, add them up for each month, then take (this month − last month) ÷ last month × 100. My Price Diary does this maths for you on your phone.</p></details>
+  <details><summary>Why is my own inflation different from the NBS figure?</summary><p>NBS measures the average price change of many items across Nigeria, usually compared with the same month last year. Your number uses only the things you buy, your own prices, and one month of change, so it can be higher or lower.</p></details>
+  <details><summary>Is my price diary private?</summary><p>Yes. Your prices are saved only on your phone. Nothing is sent to us unless you press &quot;Explain with AI&quot;, which sends only the item names and numbers. You can download your diary as a CSV file.</p></details>
+  <p class="note">This is simple arithmetic on prices <b>you</b> typed, not an official figure. Official rates come from the National Bureau of Statistics (NBS); see the latest on our <a href="/">home page</a>.</p>
+  <div class="cta"><a class="btn ghost" href="/#basket">Family Basket (compare any two months)</a><a class="btn ghost" href="/my-prices/">My Price Story (years ago vs now)</a></div>
+  <script src="/price-diary.js" defer></script>
+  <p class="updated">Written by the ByteBusters Generative AI Team. Last updated <time datetime="2026-11-27">2026-11-27</time>. We explain reasons, not today's prices: prices differ by town and change every week. For official figures see the National Bureau of Statistics.</p>
+</main>
+<footer><p><a href="/prices/">Why prices rise</a> · <a href="/learn/">Money words</a> · <a href="/">Explain my own price</a> · <a href="/price-diary/">My Price Diary</a> · <a href="/faq/">FAQ</a> · <a href="/about/">About / who built this</a> · <a href="/whats-new/">What's new</a> · <a href="https://harvest-calendar-naija.vercel.app/">Harvest Calendar Naija</a></p><p>Built with AI by the ByteBusters Generative AI Team · ByteBusters National Showcase 2026</p></footer>
+</body>
+</html>

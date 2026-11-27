@@ -66,5 +66,27 @@ const P = { item: 'Rice', quantity: '50 kg', location: 'Ogun', oldPrice: 92946, 
     L.LEARN.forEach(x => assert.ok(fs.existsSync(path.join(ROOT, 'learn', x[0], 'index.html')), x[0]));
     assert.strictEqual(Math.round(10000 / 1.25), 8000); assert.strictEqual(1000 * 1.2, 1200);
   });
+
+  console.log('Version 4: My Price Diary');
+  await ok('my own inflation: weighted by quantity, biggest mover first, never invents prices', () => {
+    const src = fs.readFileSync(path.join(ROOT, 'price-diary.js'), 'utf8');
+    const body = src.slice(src.indexOf('function maths(rows)'), src.indexOf('window.PDMaths'));
+    const maths = new Function(body + '; return maths;')();
+    const k = maths([{ name: 'Rice', qty: 4, last: 1800, now: 2000 }, { name: 'Garri', qty: 2, last: 2500, now: 2400 }, { name: 'Bread', qty: 8, last: 1300, now: 1500 }, { name: 'Empty', qty: 1, last: null, now: 500 }]);
+    assert.strictEqual(k.before, 4 * 1800 + 2 * 2500 + 8 * 1300); assert.strictEqual(k.after, 4 * 2000 + 2 * 2400 + 8 * 1500);
+    assert.strictEqual(k.change.toFixed(2), ((k.after - k.before) / k.before * 100).toFixed(2));
+    assert.deepStrictEqual(k.items.map(i => i.name), ['Bread', 'Rice', 'Garri'], 'sorted by naira added; rows without both prices are skipped');
+    assert.strictEqual(Math.round(k.items.reduce((a, i) => a + i.share, 0)), 100);
+    assert.strictEqual(maths([{ name: 'x', qty: 1, last: null, now: null }]), null);
+  });
+  await ok("price diary and what's new pages exist, are in the sitemap, and credit the team", () => {
+    const sm = fs.readFileSync(path.join(ROOT, 'sitemap.xml'), 'utf8'), pd = fs.readFileSync(path.join(ROOT, 'price-diary', 'index.html'), 'utf8');
+    assert.ok(sm.includes('/price-diary/') && sm.includes('/whats-new/'));
+    assert.ok(pd.includes('id="my-inflation"') && pd.includes('id="diary"') && pd.includes('/price-diary.js') && pd.includes('"FAQPage"'));
+    [...pd.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)].forEach(m => JSON.parse(m[1]));
+    assert.ok(fs.readFileSync(path.join(ROOT, 'whats-new', 'index.html'), 'utf8').includes('the ByteBusters team at Yewa College'));
+    assert.ok(!/\b20[2-3]\d\b/.test(fs.readFileSync(path.join(ROOT, 'price-diary.js'), 'utf8').replace(/\/\*[\s\S]*?\*\//g, '')), 'no hard-coded years or official figures in the diary code');
+    assert.ok(fs.readdirSync(path.join(ROOT, 'api')).filter(f => f.endsWith('.js')).length <= 12);
+  });
   console.log(`\nAll ${passed} checks passed.`);
 })().catch(e => { console.error('\n  ✗ FAILED:', e.message); process.exit(1); });

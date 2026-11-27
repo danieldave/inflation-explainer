@@ -2,7 +2,17 @@
 
 Built with AI by Yewa College Bytebusters (Generative AI Team).
 
-**New in version 3: the Price Library.** `tools/library.js` holds 42 everyday items and 16 money words. `node tools/build.js` turns them into real pages: "Why is the price of ___ going up in Nigeria?" (`/prices/`) and "What is inflation?" style pages (`/learn/`). Every item page has the reasons, one fact, a small calculator, family tips and a link to the crop's season on Harvest Calendar Naija. We explain reasons and never print prices or dates, so pages stay true. To add a page: add an entry, run the build, then `node tools/test.js`. Search Console codes go in `tools/site.json`.
+**New in version 4 (by the ByteBusters team at Yewa College): My Price Diary (`/price-diary/`).** See also `/whats-new/`.
+
+| Feature | What it does | Data |
+|---|---|---|
+| **My own inflation this month** | Item, how many a month, last month's and this month's price → your own one-month inflation (weighted by quantity), the biggest movers in naira, and a plain-English explanation written by our code. "Fill from my diary" uses the latest price of each item in each month. Optional "Explain with AI" in 17 languages reuses `/api/explain` (mode `basket`), sending only item names and numbers | Phone only |
+| **Price diary** | Save market prices (item, size, price, date, market). One small SVG line chart per item (tap a dot for date and price) plus a table. Download / load CSV | Phone only (`localStorage` key `iea-diary`) |
+| **Share card** | A 1080×1080 picture "My basket went up X% this month" with the top movers, shared with the phone's share sheet or downloaded, plus a WhatsApp text | Made on the phone |
+
+Code: `price-diary.js` (page made by `tools/build.js`, styles in `guide.css`). No new server function, no official figures typed into the diary (it links to the home page for NBS numbers), and the page explains that NBS compares with the same month last year.
+
+**Version 3: the Price Library.** `tools/library.js` holds 42 everyday items and 16 money words. `node tools/build.js` turns them into real pages: "Why is the price of ___ going up in Nigeria?" (`/prices/`) and "What is inflation?" style pages (`/learn/`). Every item page has the reasons, one fact, a small calculator, family tips and a link to the crop's season on Harvest Calendar Naija. We explain reasons and never print prices or dates, so pages stay true. To add a page: add an entry, run the build, then `node tools/test.js`. Search Console codes go in `tools/site.json`.
 
 ## New in version 3
 
