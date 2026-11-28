@@ -25,6 +25,11 @@
     'html.oa-t1 :is(img,video,canvas,iframe,table,pre),html.oa-t2 :is(img,video,canvas,iframe,table,pre),html.oa-t3 :is(img,video,canvas,iframe,table,pre){max-width:100%!important}',
     'html.oa-t1 :is(img,video,canvas),html.oa-t2 :is(img,video,canvas),html.oa-t3 :is(img,video,canvas){height:auto!important}',
     'html.oa-t2 body,html.oa-t3 body{overflow-wrap:break-word}',
+    /* Enlarged text needs room: let header/nav rows wrap and long buttons break onto two lines (WCAG 1.4.4). */
+    'html.oa-t2 :is(header,nav,[role=banner]),html.oa-t3 :is(header,nav,[role=banner]),html.oa-t2 :is(header,nav,[role=banner]) :is(div,ul,ol,nav,menu),html.oa-t3 :is(header,nav,[role=banner]) :is(div,ul,ol,nav,menu){flex-wrap:wrap}',
+    'html.oa-t2 :is(div,section,article,aside,main,form,fieldset,li,figure),html.oa-t3 :is(div,section,article,aside,main,form,fieldset,li,figure){min-width:0}',
+    'html.oa-t2 :is(input,select,textarea),html.oa-t3 :is(input,select,textarea){max-width:100%}',
+    'html.oa-t2 :is(header,nav,[role=banner]) :is(a,button),html.oa-t3 :is(a,button,label){white-space:normal}',
     'html.oa-zoom.oa-t1 body{zoom:1.12}html.oa-zoom.oa-t2 body{zoom:1.25}html.oa-zoom.oa-t3 body{zoom:1.45}',
     'html.oa-contrast{--o-muted:var(--o-ink,#111);--muted:var(--ink,#111);--mut:var(--ink,#111);--o-line:currentColor}',
     'html.oa-contrast body :not(.oa-keep) {text-shadow:none!important}',
@@ -110,9 +115,53 @@
     ['contrast', 'font', 'links', 'motion', 'lite', 'focus'].forEach(function (k) { H.classList.toggle('oa-' + k, !!S[k]); });
     H.classList.toggle('oa-guide-on', !!S.guide);
     if (S.lite) liteMedia(); else restoreMedia();
+    unreflow(); if (S.size) (window.requestAnimationFrame || setTimeout)(function () { setTimeout(reflow, 60); });
     if (S.captions) captions();
     if (S.motion) D.querySelectorAll('video[autoplay]').forEach(function (v) { try { v.pause(); } catch (e) {} });
     sync();
+  }
+
+  /* Reflow engine: with enlarged text, find anything pushed off-screen and loosen the nearest layout
+     that caused it (unwrap-able flex rows, rigid grids, nowrap text). Every change is recorded and undone on reset. */
+  var touched = [];
+  function setStyle(e, prop, val) { touched.push([e, prop, e.style[prop]]); e.style[prop] = val; }
+  function unreflow() { for (var i = touched.length - 1; i >= 0; i--) touched[i][0].style[touched[i][1]] = touched[i][2]; touched = []; }
+  function clipped(e) {
+    for (var c = e.parentElement; c && c !== D.body; c = c.parentElement) {
+      var cs = getComputedStyle(c);
+      if (/(hidden|auto|scroll|clip)/.test(cs.overflowX) || cs.position === 'fixed') return true;
+    }
+    return false;
+  }
+  function reflow() {
+    unreflow();
+    if (!S.size || !D.body) return;
+    for (var pass = 0; pass < 4; pass++) {
+      var W = D.documentElement.clientWidth, hits = [], all = D.body.getElementsByTagName('*');
+      for (var i = 0; i < all.length; i++) {
+        var e = all[i]; if (e === host || e === guide) continue;
+        var r = e.getBoundingClientRect(); if (r.width === 0 || r.right <= W + 1) continue;
+        var par = e.parentElement; if (par && par !== D.body && par.getBoundingClientRect().right > W + 1) continue;
+        var cs = getComputedStyle(e); if (cs.position === 'fixed' || cs.position === 'absolute') continue;
+        if (!clipped(e)) hits.push(e);
+      }
+      // Text can spill out of a box that itself fits (a long word in a narrow column): let that word break.
+      var tw = D.createTreeWalker(D.body, NodeFilter.SHOW_TEXT), n, rg = D.createRange(), words = 0;
+      while ((n = tw.nextNode())) {
+        if (!n.nodeValue.trim() || !n.parentElement || n.parentElement.closest('.oa-host')) continue;
+        rg.selectNodeContents(n); var tb = rg.getBoundingClientRect();
+        if (tb.right > W + 1 && !clipped(n.parentElement) && n.parentElement.style.overflowWrap !== 'anywhere') { setStyle(n.parentElement, 'overflowWrap', 'anywhere'); words++; }
+      }
+      if (!hits.length && !words) break;
+      hits.forEach(function (e) {
+        var p = e.parentElement, pcs = p && getComputedStyle(p), cs = getComputedStyle(e);
+        if (cs.whiteSpace === 'nowrap' || cs.whiteSpace === 'pre') setStyle(e, 'whiteSpace', 'normal');
+        if (pcs && /flex/.test(pcs.display) && pcs.flexWrap === 'nowrap' && pcs.flexDirection.indexOf('row') === 0) setStyle(p, 'flexWrap', 'wrap');
+        else if (pcs && /grid/.test(pcs.display)) setStyle(p, 'gridTemplateColumns', 'minmax(0,1fr)');
+        else { setStyle(e, 'maxWidth', '100%'); setStyle(e, 'overflowWrap', 'anywhere'); }
+        setStyle(e, 'minWidth', '0');
+      });
+    }
   }
 
   var scaled = [];
@@ -248,7 +297,8 @@
 
     skipLink();
     lift(); setTimeout(lift, 800);
-    var lt; addEventListener('resize', function () { clearTimeout(lt); lt = setTimeout(lift, 150); }, { passive: true });
+    var lt; addEventListener('resize', function () { clearTimeout(lt); lt = setTimeout(function () { lift(); if (S.size) reflow(); }, 150); }, { passive: true });
+    addEventListener('load', function () { if (S.size) setTimeout(reflow, 100); });
     if (S.lite || S.captions) new MutationObserver(function () { if (S.lite) liteMedia(); if (S.captions) captions(); }).observe(D.body, { childList: true, subtree: true });
   }
 
