@@ -1,0 +1,4 @@
+# repo tooling, not part of the website
+scripts/secret-scan.mjs
+scripts/secret-scan.test.mjs
+.github/
