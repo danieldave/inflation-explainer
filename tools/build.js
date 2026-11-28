@@ -70,6 +70,7 @@ ${body}
   <p class="updated">Written by the ${esc(SITE.publisher)}. Last updated <time datetime="${TODAY}">${TODAY}</time>. We explain reasons, not today's prices: prices differ by town and change every week. For official figures see the National Bureau of Statistics.</p>
 </main>
 <footer><p><a href="/prices/">Why prices rise</a> · <a href="/learn/">Money words</a> · <a href="/">Explain my own price</a> · <a href="/price-diary/">My Price Diary</a> · <a href="/faq/">FAQ</a> · <a href="/about/">About / who built this</a> · <a href="/whats-new/">What's new</a> · <a href="${SITE.harvest}/">Harvest Calendar Naija</a></p><p>Built with AI by the ${esc(SITE.publisher)} · ByteBusters National Showcase 2026</p></footer>
+<script src="/a11y.js" defer></script>
 </body>
 </html>
 `;

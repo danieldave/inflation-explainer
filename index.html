@@ -1084,5 +1084,6 @@ progress();
 /* A Price Library page can send the item name: /?item=Rice#tool */
 try { const sent = new URLSearchParams(location.search).get("item"); if (sent) $("item").value = sent.replace(/[<>]/g, "").slice(0, 40); } catch (e) {}
 </script>
+<script src="/a11y.js" defer></script>
 </body>
 </html>

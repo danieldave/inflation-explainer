@@ -89,4 +89,5 @@ const P = { item: 'Rice', quantity: '50 kg', location: 'Ogun', oldPrice: 92946, 
     assert.ok(fs.readdirSync(path.join(ROOT, 'api')).filter(f => f.endsWith('.js')).length <= 12);
   });
   console.log(`\nAll ${passed} checks passed.`);
+  require('./test-a11y.js');
 })().catch(e => { console.error('\n  ✗ FAILED:', e.message); process.exit(1); });
